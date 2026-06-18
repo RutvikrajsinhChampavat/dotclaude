@@ -1,36 +1,58 @@
 # dotclaude
 
-Rutvik's shared Claude Code setup, packaged for the team. Two halves:
+Rutvik's shared Claude Code setup, packaged for the team. **Two ways to install** — pick one per item, don't do both:
 
-- **Plugin** (`dotclaude-toolkit`) — 10 skills + 12 subagents + session-hygiene hooks. Installed via the marketplace.
-- **Bootstrap** (`setup/`) — global `CLAUDE.md`, `rules/`, statusline, and a settings template. These must live at fixed `~/.claude/` paths, so `install.sh` copies them (a plugin cannot place files there).
+- **Plugin** (`dotclaude-toolkit`) — managed, all-in-one. The 10 skills + 12 subagents + hooks install as one unit via `/plugin`, with versioning and clean uninstall. Best when you want the whole toolkit.
+- **À-la-carte installer** (`install.sh`) — cherry-pick *individual* skills, agents, or rules (plus `CLAUDE.md` / statusline / settings) by copying them straight into `~/.claude/`. Best when you want only specific pieces. This is also the only way to get `CLAUDE.md` and `rules/`, since a plugin can't place files at those paths.
+
+> ⚠️ Don't install the **same** skill/agent via *both* paths — it loads twice. Use the plugin for the bundle, or the installer for à-la-carte, per item.
 
 ---
 
 ## Install
 
-### 1. Bootstrap (CLAUDE.md, rules, statusline, settings template)
-
-```bash
-git clone https://github.com/RutvikrajsinhChampavat/dotclaude.git
-cd dotclaude
-./install.sh
-```
-
-`install.sh` backs up any existing `~/.claude/CLAUDE.md` and `~/.claude/rules/` before copying, and **never** overwrites your `settings.json` (drops a `settings.template.json` to merge by hand).
-
-### 2. Plugin (skills + agents + hooks)
-
-Inside Claude Code:
+### Option A — Plugin (everything, managed)
 
 ```
 /plugin marketplace add RutvikrajsinhChampavat/dotclaude
 /plugin install dotclaude-toolkit@dotclaude
 ```
 
-Restart Claude Code. Confirm it loaded — ask Claude to list available skills/agents, or open `/plugin`.
+Restart Claude Code. Confirm it loaded — ask Claude to list skills/agents, or open `/plugin`.
 
-### 3. (optional) Mirror the full plugin ecosystem
+> The plugin carries skills + agents + hooks only. For `CLAUDE.md`, `rules/`, and the statusline, run the installer below with the components you want.
+
+### Option B — À-la-carte installer (pick exactly what you want)
+
+```bash
+git clone https://github.com/RutvikrajsinhChampavat/dotclaude.git
+cd dotclaude
+./install.sh                 # interactive — pick items per category
+./install.sh --list          # show every available skill / agent / rule
+```
+
+Cherry-pick by name (all flags repeatable, combinable):
+
+```bash
+./install.sh --skill rule-audit --skill tdd-workflow
+./install.sh --agent code-reviewer --agent planner
+./install.sh --rule typescript/security --rule common/code-review
+./install.sh --skills --rules                 # whole groups
+./install.sh --claude-md --statusline --settings
+./install.sh --all                            # the lot
+```
+
+| Flag | Installs |
+|---|---|
+| `--skill NAME` / `--skills` | one named skill / all skills |
+| `--agent NAME` / `--agents` | one named agent / all agents |
+| `--rule PATH` / `--rules` | one rule (e.g. `python/testing`) / all rules |
+| `--claude-md` `--statusline` `--settings` | global instructions / statusline script / settings template |
+| `--all` | everything |
+
+The script backs up any existing file before overwriting, and **never** overwrites your `settings.json` (drops `settings.template.json` to merge by hand).
+
+### (optional) Mirror the full plugin ecosystem
 
 `setup/settings.template.json` carries Rutvik's `extraKnownMarketplaces` + `enabledPlugins` (superpowers, caveman, context7, atlassian, figma, …). Merge that block into your `settings.json`, then `/plugin` to install them.
 
