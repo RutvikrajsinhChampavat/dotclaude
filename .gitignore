@@ -1,0 +1,17 @@
+# OS / editor noise
+.DS_Store
+*.swp
+
+# install.sh backups (in case anyone runs it inside the repo)
+*.bak.*
+
+# never commit real local Claude state if someone copies it in by mistake
+history.jsonl
+sessions/
+projects/
+telemetry/
+usage-data/
+*stats-cache.json
+jira-config.json
+*mcp-needs-auth-cache.json
+settings.json

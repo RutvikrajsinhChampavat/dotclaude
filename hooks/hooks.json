@@ -1,0 +1,35 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[session] Starting new session — run /context to check usage before your first task' >&2"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[session] Session ending — if you completed a task, run /clear before the next one' >&2"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "tool == \"Bash\" && tool_input.command matches \"(npm test|vitest|pytest|npm run test)\"",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[hook] Tests ran — if this completed your task, consider /clear before moving on' >&2"
+          }
+        ]
+      }
+    ]
+  }
+}

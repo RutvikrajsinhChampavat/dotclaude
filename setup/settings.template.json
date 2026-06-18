@@ -1,0 +1,89 @@
+{
+  "_comment": "STARTING POINT — do NOT overwrite your own ~/.claude/settings.json. Merge the keys you want. Hooks come from the dotclaude-toolkit plugin, so they are intentionally absent here. Machine-specific absolute-path permissions and additionalDirectories were stripped.",
+
+  "permissions": {
+    "allow": [
+      "Skill(update-config)",
+      "Bash(npm run:*)",
+      "Bash(npm test:*)",
+      "Bash(npx vitest:*)",
+      "Bash(npx eslint:*)",
+      "Bash(npx prettier:*)",
+      "Bash(uv run *)",
+      "Bash(git fetch *)"
+    ],
+    "defaultMode": "default"
+  },
+
+  "statusLine": {
+    "type": "command",
+    "command": "sh /Users/YOUR_USER/.claude/statusline-command.sh"
+  },
+
+  "_personal_prefs_optional": "The block below is Rutvik's preference; adopt or drop per taste.",
+  "model": "opus[1m]",
+  "effortLevel": "xhigh",
+  "advisorModel": "opus",
+  "editorMode": "normal",
+  "preferredNotifChannel": "terminal_bell",
+
+  "_ecosystem_comment": "Mirror Rutvik's plugin set. After adding these, run /plugin to install. extraKnownMarketplaces makes the marketplaces resolvable; enabledPlugins toggles which install.",
+  "extraKnownMarketplaces": {
+    "dotclaude": {
+      "source": {
+        "source": "github",
+        "repo": "RutvikrajsinhChampavat/dotclaude"
+      }
+    },
+    "superpowers-marketplace": {
+      "source": {
+        "source": "github",
+        "repo": "obra/superpowers-marketplace"
+      }
+    },
+    "claude-plugins-official": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-official"
+      }
+    },
+    "pzep1-claudecode-debug-mode": {
+      "source": {
+        "source": "github",
+        "repo": "pzep1/claudecode-debug-mode"
+      }
+    },
+    "caveman": {
+      "source": {
+        "source": "github",
+        "repo": "JuliusBrussee/caveman"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "dotclaude-toolkit@dotclaude": true,
+    "superpowers@superpowers-marketplace": true,
+    "claude-session-driver@superpowers-marketplace": true,
+    "double-shot-latte@superpowers-marketplace": true,
+    "episodic-memory@superpowers-marketplace": true,
+    "superpowers-developing-for-claude-code@superpowers-marketplace": true,
+    "ralph-loop@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "github@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
+    "feature-dev@claude-plugins-official": true,
+    "claude-debug-plugin@pzep1-claudecode-debug-mode": true,
+    "caveman@caveman": true,
+    "claude-code-setup@claude-plugins-official": true,
+    "pr-review-toolkit@claude-plugins-official": true,
+    "atlassian@claude-plugins-official": true,
+    "chrome-devtools-mcp@claude-plugins-official": true,
+    "remember@claude-plugins-official": true,
+    "qodo-skills@claude-plugins-official": true,
+    "figma@claude-plugins-official": true
+  }
+}

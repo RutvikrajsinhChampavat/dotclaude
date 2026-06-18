@@ -1,0 +1,19 @@
+{
+  "name": "dotclaude",
+  "description": "Rutvik's personal Claude Code marketplace.",
+  "owner": {
+    "name": "Rutvikrajsinh Champavat",
+    "url": "https://github.com/RutvikrajsinhChampavat"
+  },
+  "plugins": [
+    {
+      "name": "dotclaude-toolkit",
+      "description": "10 skills, 12 subagents, and session-hygiene hooks.",
+      "version": "0.1.0",
+      "source": "./",
+      "author": {
+        "name": "Rutvikrajsinh Champavat"
+      }
+    }
+  ]
+}
