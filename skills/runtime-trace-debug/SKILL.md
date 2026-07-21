@@ -66,10 +66,10 @@ Anything that logs to stdout or a file you can reach needs no sink — just tag 
 
 - **Instrument:** Python `logger.info("[TAG] %s", ...)` (or `print`); Node
   `console.log`/logger. Ensure the level is actually emitted (info vs debug).
-- **Read it** (aetherion services run in Docker via `constellation`):
+- **Read it** (services running in Docker via docker compose):
   ```bash
-  docker compose logs -f --tail=0 milkyway | grep -E '\[POLL\]|\[FINALIZE\]'
-  docker compose logs --since=2m supernova        # scope by time
+  docker compose logs -f --tail=0 <service> | grep -E '\[POLL\]|\[FINALIZE\]'
+  docker compose logs --since=2m <worker>         # scope by time
   ```
   Or `tail -f <logfile>`, or `journalctl -fu <svc>`.
 - **Correlation:** tag every line with `workflow_id` / request id / `conversation_id`
@@ -87,7 +87,7 @@ user's **browser console**. For HTTPS / proxied SPAs a standalone debug server o
 `http://localhost:PORT` is blocked (CORS / mixed-content), so post to the app's
 own origin and have IT write a file you read.
 
-Next.js / Sombrero (HTTPS `app.localhost` → nginx → Next on host; same-origin
+Next.js SPA (HTTPS via a reverse proxy → Next on host; same-origin
 relative fetch, route runs on host so its file write is in your fs):
 
 ```ts
@@ -137,5 +137,4 @@ curl -s -o /dev/null -w "%{http_code}\n" -X POST http://localhost:3000/api/debug
 - [ ] `grep -rn '\[TAG' src/` (and your other tags) → zero hits.
 - [ ] lint + types + scoped tests green; the regression test stays.
 
-Reference: aetherion project memory `sombrero-runtime-log-sink-debug` is a worked
-Transport-B run. Sombrero vitest runs under Node 22.
+Reference: a worked Transport-B run confirmed this pattern on an HTTPS SPA.

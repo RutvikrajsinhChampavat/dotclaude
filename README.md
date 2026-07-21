@@ -2,7 +2,7 @@
 
 Rutvik's shared Claude Code setup, packaged for the team. **Two ways to install** — pick one per item, don't do both:
 
-- **Plugin** (`dotclaude-toolkit`) — managed, all-in-one. The 10 skills + 12 subagents + hooks install as one unit via `/plugin`, with versioning and clean uninstall. Best when you want the whole toolkit.
+- **Plugin** (`dotclaude-toolkit`) — managed, all-in-one. The 21 skills + 12 subagents + hooks install as one unit via `/plugin`, with versioning and clean uninstall. Best when you want the whole toolkit.
 - **À-la-carte installer** (`install.sh`) — cherry-pick *individual* skills, agents, or rules (plus `CLAUDE.md` / statusline / settings) by copying them straight into `~/.claude/`. Best when you want only specific pieces. This is also the only way to get `CLAUDE.md` and `rules/`, since a plugin can't place files at those paths.
 
 > ⚠️ Don't install the **same** skill/agent via *both* paths — it loads twice. Use the plugin for the bundle, or the installer for à-la-carte, per item.
@@ -74,6 +74,19 @@ The script backs up any existing file before overwriting, and **never** overwrit
 | `verification-loop` | manual `/verify` only | pre-commit lint/tsc/test/build gate |
 | `github-create-pr` | "create PR / raise PR" | PR on current branch when pushed |
 | `create-jira-ticket` | "create JIRA ticket / bug" | new Atlassian issue |
+| `fuck-slop` | before publishing any prose | strips AI writing tells, rewrites to target register |
+| `grill-me` | "stress-test / challenge my plan" | one-question-at-a-time adversarial plan probe |
+| `junior-to-senior` | before committing an agent-written plan | senior-engineer rewrite; fixes altitude/vagueness |
+| `interface-kit` | "build UI / make it look good" | accessible, performant UI implementation guide |
+| `python-pro` | Python 3.11+ / async / typing | type-safe async, mypy strict, pytest suites |
+| `postgres-pro` | query perf / EXPLAIN / JSONB | PostgreSQL tuning, VACUUM, extensions |
+| `sqlalchemy-alembic-expert-best-practices-code-review` | SQLAlchemy / Alembic | ORM + migration safety review |
+| `temporal-python-testing` | testing Temporal workflows | pytest time-skip, replay, mocking |
+| `workflow-orchestration-patterns` | durable/long-running workflows | Temporal design — saga, determinism, state |
+| `property-based-testing` | parse/validate/serialize tests | PBT across languages, stronger than examples |
+| `threat-model` | "threat model / attack surface" | THREAT_MODEL.md via interview or code bootstrap |
+
+> Some skills (`python-pro`, `postgres-pro`, `sqlalchemy-…`, `temporal-python-testing`, `workflow-orchestration-patterns`, `property-based-testing`, `threat-model`, `interface-kit`) are vendored third-party skills, included as part of Rutvik's toolkit.
 
 > `rule-audit` reads `~/.claude/rules/` and the global `~/.claude/CLAUDE.md` — both placed by `install.sh`. Run step 1 before relying on it.
 
