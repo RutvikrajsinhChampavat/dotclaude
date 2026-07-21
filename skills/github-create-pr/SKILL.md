@@ -59,7 +59,7 @@ If `origin/$base` is unavailable locally, fall back to the local `$base` branch 
 
 8. Fill the template honestly:
 - `Summary`: 2-4 bullets covering what changed and why.
-- `Related Ticket`: extract an `ABC-123` style ID from the branch name or commits when present; otherwise write `- None`.
+- `Related Ticket`: when the branch/commits carry an `ABC-123` style key, ALWAYS link it as a clickable Markdown link whose **visible text is `KEY: <ticket title>`** and whose href is the browse URL — e.g. `[AP-549: Resumable Chat Streaming — Survive Page Refresh](https://calfusproducts.atlassian.net/browse/AP-549)`. Fetch the title from JIRA (`GET /rest/api/3/issue/<KEY>?fields=summary`; creds + domain from `~/.claude/jira-config.json`, browse URL = `https://<domain>/browse/<KEY>`). If the title fetch fails, fall back to `[KEY](browse URL)` (still a link, never the bare key). If no ticket key exists, write `- None`.
 - `Changes`: 3-6 concrete bullets based on the diff.
 - `Screenshots / Preview`: use `N/A` unless the user provided screenshots or clearly described a UI change with preview assets.
 - `How to Test`: give reviewer steps only. Do not claim commands were run if you did not run them.

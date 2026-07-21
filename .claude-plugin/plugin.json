@@ -1,7 +1,7 @@
 {
   "name": "dotclaude-toolkit",
-  "version": "0.1.0",
-  "description": "Rutvik's shared Claude Code toolkit — 10 skills, 12 review/dev subagents, and session-hygiene hooks for TS/JS/Python + MERN teams.",
+  "version": "0.2.0",
+  "description": "Rutvik's shared Claude Code toolkit — 21 skills, 12 review/dev subagents, and session-hygiene hooks for TS/JS/Python + MERN teams.",
   "author": {
     "name": "Rutvikrajsinh Champavat",
     "url": "https://github.com/RutvikrajsinhChampavat"
