@@ -77,15 +77,14 @@ orphaned — do NOT force those as gates.
 
 ### Domain auto-fire (by service / area)
 
-- **Python in `milkyway` / `supernova` / `ursa`** → `python-pro`.
+- **Python backend services** → `python-pro`.
 - **Postgres query / perf / EXPLAIN** → `postgres-pro`.
-- **SQLAlchemy ORM (`ursa`)** → `sqlalchemy-alembic-expert-best-practices-code-review`
-  (ORM half only — migrations here are Flyway SQL, not Alembic).
-- **Temporal work (`supernova`)** → `workflow-orchestration-patterns` +
+- **SQLAlchemy ORM** → `sqlalchemy-alembic-expert-best-practices-code-review`.
+- **Temporal work** → `workflow-orchestration-patterns` +
   `temporal-python-testing`.
-- **React in `sombrero`** → `frontend-patterns` (composes with `interface-kit`).
+- **React frontend** → `frontend-patterns` (composes with `interface-kit`).
 - **Auth / RBAC / input boundaries** → `security-review` + `security-reviewer` agent.
-- **Claude / Anthropic LLM code (Aether, bob, llm_chat)** → `claude-api` before
+- **Claude / Anthropic LLM code** → `claude-api` before
   editing (never guess model ids / pricing / params from memory).
 - **Charts / graphs / dashboards** → `dataviz`.
 - **Serialization / validation / parsing tests** → `property-based-testing`.
@@ -447,8 +446,7 @@ present, computed animationName/duration on the element), (2) give the user the
 served URL to watch it live in their own browser, (3) never claim "it animates"
 as if I saw it move — say "animation wired; confirm motion at <url>".
 
-Reference pattern: AP-482 prompt-improver work — preset menus, diff-card
-treatments, AI border, dark-mode button colors were all decided this way
+Reference pattern: a past prompt-improver UI change was decided this way
 (static HTML mock → preview screenshot → user picks → implement with tokens).
 
 ## In plans — settle the UI choice up front, record it in the plan
@@ -627,7 +625,7 @@ Code edited ≠ change live. After any backend or agent-bundle change, state
 exactly what must be rebuilt / republished / redeployed for it to take
 effect — which container (`./build.sh <svc>` / `--force-recreate`), which
 bundle, both tarballs, and any token re-source. On version bumps, check for
-orphaned old containers polling the same queue (whirlpool split-brain).
+orphaned old containers polling the same queue (a past split-brain incident).
 
 ---
 
