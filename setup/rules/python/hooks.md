@@ -5,7 +5,7 @@ paths:
 ---
 # Python Hooks
 
-> This file extends [common/hooks.md](../common/hooks.md) with Python specific content.
+> This file extends [workflow/hooks.md](../workflow/hooks.md) with Python specific content.
 
 ## PostToolUse Hooks
 

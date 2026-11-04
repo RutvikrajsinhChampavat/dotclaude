@@ -8,9 +8,18 @@
   "plugins": [
     {
       "name": "dotclaude-toolkit",
-      "description": "21 skills, 12 subagents, and session-hygiene hooks.",
-      "version": "0.2.0",
+      "description": "25 skills, 12 subagents, and session-hygiene hooks.",
+      "version": "0.3.0",
       "source": "./",
+      "author": {
+        "name": "Rutvikrajsinh Champavat"
+      }
+    },
+    {
+      "name": "design-mock-workflow",
+      "description": "Options-first UI workflow: grade distinct, interactive design options /100 on real components and real data before any UI code changes.",
+      "version": "0.1.2",
+      "source": "./plugins/design-mock-workflow",
       "author": {
         "name": "Rutvikrajsinh Champavat"
       }

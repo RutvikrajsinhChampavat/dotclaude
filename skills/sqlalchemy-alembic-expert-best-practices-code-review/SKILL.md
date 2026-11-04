@@ -1,6 +1,7 @@
 ---
 name: sqlalchemy-alembic-expert-best-practices-code-review
-description: SQLAlchemy ORM and Alembic migration best practices for building safe, performant database schemas. This skill should be used when writing, reviewing, or refactoring SQLAlchemy models, Alembic migrations, or database query patterns. Triggers on tasks involving SQLAlchemy ORM, Alembic migrations, database schema changes, or query optimization.
+description: >-
+  Use when writing, reviewing or refactoring SQLAlchemy ORM models or query patterns, or Alembic migrations: schema changes, indexes, unique/foreign-key/check constraints, column type changes, query optimization. Where migrations are not Alembic (e.g. Flyway SQL), only the ORM half applies.
 license: MIT
 metadata:
   author: wispbit

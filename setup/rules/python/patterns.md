@@ -5,7 +5,7 @@ paths:
 ---
 # Python Patterns
 
-> This file extends [common/patterns.md](../common/patterns.md) with Python specific content.
+> This file extends [workflow/patterns.md](../workflow/patterns.md) with Python specific content.
 
 ## Protocol (Duck Typing)
 
@@ -36,7 +36,7 @@ class CreateUserRequest:
 
 ## Reference
 
-See skill: `python-patterns` for comprehensive patterns including decorators, concurrency, and package organization.
+See skill: `python-pro` for async/concurrency patterns and package organization.
 
 ---
 ## FastAPI patterns

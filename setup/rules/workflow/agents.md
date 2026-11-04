@@ -14,8 +14,10 @@ Located in `~/.claude/agents/`:
 | build-error-resolver | Fix build errors | When build fails |
 | e2e-runner | E2E testing | Critical user flows |
 | refactor-cleaner | Dead code cleanup | Code maintenance |
-| doc-updater | Documentation | Updating docs |
-| rust-reviewer | Rust code review | Rust projects |
+| database-reviewer | Postgres/SQL review | Query, schema, migration changes |
+| docs-lookup | Library/API docs lookup | Confirming API usage via Context7 |
+| python-reviewer | Python code review | Python projects |
+| typescript-reviewer | TypeScript/JS code review | TypeScript/JavaScript projects |
 
 ## Immediate Agent Usage
 

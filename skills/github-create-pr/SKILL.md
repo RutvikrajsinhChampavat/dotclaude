@@ -79,6 +79,25 @@ gh pr create --base "$base" --head "$branch" --title "$title" --body-file "$body
 Add `--draft` only when the user explicitly asks for a draft PR.
 
 11. Return the PR URL and final title.
+12. Comment on the JIRA ticket that the PRs are up. Skip this step when there is no ticket key.
+- Post ONE comment after the last PR for the ticket in this run, listing every PR this run opened (all repos). Never one comment per repo.
+- Post it without asking first: running this skill is the approval for this comment.
+- Use the Atlassian MCP, never `curl` (a live token in a shell command is auto-denied): `addOrEditJiraIssueComment` with `cloudId: "<your-domain>.atlassian.net"`, the ticket key, `contentFormat: "markdown"`, and exactly this body (one bullet per PR, bare URLs; Jira renders them as smart links):
+
+```
+PRs raised:
+- <repo>: <pr_url>
+```
+
+- If the write is denied, stop and ask the user to approve the identical call. Do not route around it with another tool.
+- Report the comment link (or the failure) beside the PR URLs.
+13. End with a share message, one line per PR opened for the ticket (all repos, not just this one). Render it as plain Markdown, NEVER in a fenced block: copying a code block yields literal `[text](url)` that Slack/Teams don't link. Never write it to the clipboard. Shape (rendered, not fenced):
+
+```
+JIRA: [<KEY>: <ticket title>](https://<your-domain>.atlassian.net/browse/<KEY>)
+
+<repo>: <pr_url>
+```
 
 ## Guardrails
 

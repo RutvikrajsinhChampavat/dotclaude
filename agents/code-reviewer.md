@@ -226,7 +226,7 @@ project + global rule loading. Do NOT re-invent rule discovery here. The
 skill walks:
 
 - Project: `CLAUDE.md`, `.claude/rules.md`, `.claude/architecture.md`, `.claude/review.md`, `.claude/context.md`
-- Global: `~/.claude/CLAUDE.md`, `~/.claude/rules/common/*.md`, `~/.claude/rules/typescript/*.md`, `~/.claude/rules/python/*.md`
+- Global: `~/.claude/CLAUDE.md`, `~/.claude/rules/**/*.md` (common auto-loads; review/, workflow/, typescript/, python/ are read on demand)
 
 Common rule categories the audit surfaces:
 

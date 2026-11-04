@@ -5,7 +5,7 @@ paths:
 ---
 # Python Testing
 
-> This file extends [common/testing.md](../common/testing.md) with Python specific content.
+> This file extends [workflow/testing.md](../workflow/testing.md) with Python specific content.
 
 ## Framework
 
@@ -35,7 +35,7 @@ def test_database_connection():
 
 ## Reference
 
-See skill: `python-testing` for detailed pytest patterns and fixtures.
+See skill: `python-pro` for detailed pytest patterns, fixtures, parametrize, and mocking.
 
 ---
 ## Python testing overrides

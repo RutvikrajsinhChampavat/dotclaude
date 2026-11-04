@@ -9,7 +9,8 @@
 
 Types: feat, fix, refactor, docs, test, chore, perf, ci
 
-Note: Attribution disabled globally via ~/.claude/settings.json.
+Attribution is disabled via `attribution: {commit: "", pr: ""}` in `~/.claude/settings.json`
+(set 2026-08-27 — before that the claim here was false and nothing enforced it).
 
 ## Pull Request Workflow
 

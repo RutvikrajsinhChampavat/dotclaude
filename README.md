@@ -2,7 +2,7 @@
 
 Rutvik's shared Claude Code setup, packaged for the team. **Two ways to install** — pick one per item, don't do both:
 
-- **Plugin** (`dotclaude-toolkit`) — managed, all-in-one. The 21 skills + 12 subagents + hooks install as one unit via `/plugin`, with versioning and clean uninstall. Best when you want the whole toolkit.
+- **Plugin** (`dotclaude-toolkit`) — managed, all-in-one. The 25 skills + 12 subagents + hooks install as one unit via `/plugin`, with versioning and clean uninstall. Best when you want the whole toolkit.
 - **À-la-carte installer** (`install.sh`) — cherry-pick *individual* skills, agents, or rules (plus `CLAUDE.md` / statusline / settings) by copying them straight into `~/.claude/`. Best when you want only specific pieces. This is also the only way to get `CLAUDE.md` and `rules/`, since a plugin can't place files at those paths.
 
 > ⚠️ Don't install the **same** skill/agent via *both* paths — it loads twice. Use the plugin for the bundle, or the installer for à-la-carte, per item.
@@ -22,6 +22,19 @@ Restart Claude Code. Confirm it loaded — ask Claude to list skills/agents, or 
 
 > The plugin carries skills + agents + hooks only. For `CLAUDE.md`, `rules/`, and the statusline, run the installer below with the components you want.
 
+### Standalone: `design-mock-workflow`
+
+Options-first UI workflow. Before any UI code changes, Claude builds distinct, interactive
+design options on your real components and data, grades each /100, and waits for your pick.
+Installs on its own, separate from the toolkit:
+
+```
+/plugin marketplace add RutvikrajsinhChampavat/dotclaude
+/plugin install design-mock-workflow@dotclaude
+```
+
+Details: [plugins/design-mock-workflow/README.md](plugins/design-mock-workflow/README.md).
+
 ### Option B — À-la-carte installer (pick exactly what you want)
 
 ```bash
@@ -36,7 +49,7 @@ Cherry-pick by name (all flags repeatable, combinable):
 ```bash
 ./install.sh --skill rule-audit --skill tdd-workflow
 ./install.sh --agent code-reviewer --agent planner
-./install.sh --rule typescript/security --rule common/code-review
+./install.sh --rule typescript/security --rule review/code-review
 ./install.sh --skills --rules                 # whole groups
 ./install.sh --claude-md --statusline --settings
 ./install.sh --all                            # the lot
@@ -85,8 +98,14 @@ The script backs up any existing file before overwriting, and **never** overwrit
 | `workflow-orchestration-patterns` | durable/long-running workflows | Temporal design — saga, determinism, state |
 | `property-based-testing` | parse/validate/serialize tests | PBT across languages, stronger than examples |
 | `threat-model` | "threat model / attack surface" | THREAT_MODEL.md via interview or code bootstrap |
+| `verification-evidence` | claiming done / citing figures / live-infra proof | evidence standard: orthogonal hard signal, provenance tag per number |
+| `pr-review-mechanics` | reviewing any GitHub PR | inline comment shape, triage, re-review, merge verdict |
+| `plan-authoring` | writing or presenting a plan / JIRA ticket | plan shape, scope rules, ticket shape, post-PR summary |
+| `insights-delta` | after an `/insights` run | compares the window since the last run with the one before |
 
 > Some skills (`python-pro`, `postgres-pro`, `sqlalchemy-…`, `temporal-python-testing`, `workflow-orchestration-patterns`, `property-based-testing`, `threat-model`, `interface-kit`) are vendored third-party skills, included as part of Rutvik's toolkit.
+
+> Not bundled, worth installing from their own repos: `fastapi` (fastapi/fastapi), `semgrep` (trailofbits/skills), `redis-core` (redis/agent-skills), `temporal-developer` (temporalio/skill-temporal-developer), `phoenix-evals` (arize-ai/phoenix).
 
 > `rule-audit` reads `~/.claude/rules/` and the global `~/.claude/CLAUDE.md` — both placed by `install.sh`. Run step 1 before relying on it.
 
@@ -100,7 +119,7 @@ Session-hygiene nudges: `/context` reminder at session start, `/clear` reminder 
 
 ### Bootstrap (`setup/`)
 
-`CLAUDE.md` (global engineering instructions), `rules/` (common + typescript + python rule sets), `statusline-command.sh`, `settings.template.json`.
+`CLAUDE.md` (global engineering instructions), `rules/` (`common/` loads every session; `review/`, `workflow/`, `typescript/` and `python/` load on demand through the template's `claudeMdExcludes`), `statusline-command.sh`, `settings.template.json`.
 
 ---
 
@@ -109,6 +128,12 @@ Session-hygiene nudges: `/context` reminder at session start, `/clear` reminder 
 ```bash
 cd dotclaude && git pull && ./install.sh   # refresh bootstrap
 /plugin marketplace update dotclaude        # refresh plugin
+```
+
+Upgrading from 0.2.x or earlier: the review and workflow rules moved out of `rules/common/`. Delete the old copies, or they load twice:
+
+```bash
+rm ~/.claude/rules/common/{agents,code-review,development-workflow,git-workflow,hooks,patterns,performance,testing}.md
 ```
 
 ## License

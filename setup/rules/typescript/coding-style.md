@@ -41,6 +41,7 @@ export function formatUser(user: User): string {
 - Use `interface` for object shapes that may be extended or implemented
 - Use `type` for unions, intersections, tuples, mapped types, and utility types
 - Prefer string literal unions over `enum` unless an `enum` is required for interoperability
+- **Never comment a type or interface — declaration OR any member.** No `/** */`, no `//`, no field docstrings. Types carry ZERO comments; make the type/field name explain itself. If a comment feels needed, the name is wrong — rename, don't annotate. (Enforced by `rule-audit`.)
 
 ```typescript
 interface User {
@@ -197,6 +198,12 @@ const validated: UserInput = userSchema.parse(input)
 - No `console.log` statements in production code
 - Use proper logging libraries instead
 - See hooks for automatic detection
+
+## Optional Chaining / Nullish Guards
+
+- Any property or method access on a value that could be `null`/`undefined` uses `?.` (`user?.profile?.name`, `ref.current?.focus()`) — never a bare non-null assertion (`!`) or an unguarded chain
+- `?.` (safe access) and `??` (fallback value) solve different problems — pair them when a fallback VALUE is actually needed (`data?.items ?? []`), use `?.` alone when merely avoiding a crash is enough
+- Skip `?.` only when the type is genuinely non-nullable — verify the actual type/interface first; a guard on a value that can't be null reads as dead defensive noise
 
 ---
 ## Project overrides — MERN stack

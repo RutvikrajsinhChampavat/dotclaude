@@ -1,15 +1,7 @@
 ---
 name: threat-model
 description: >-
-  Build a threat model for a target codebase. Three modes: "interview" walks an
-  application owner through the four-question framework and produces a threat
-  model from their answers; "bootstrap" derives a threat model from the code
-  plus past vulnerabilities (CVEs, git history, pentest reports) when no owner
-  is available; "bootstrap-then-interview" chains the two when both owner and
-  codebase are present. All write THREAT_MODEL.md in a shared schema. Use
-  when asked to "threat
-  model", "build a threat model", "map the attack surface", or "what should we
-  be worried about in this codebase".
+  Use when asked to "threat model", "build a threat model", "map the attack surface", or "what should we be worried about in this codebase"; running /threat-model interview, bootstrap or bootstrap-then-interview; or producing THREAT_MODEL.md, with or without the system owner present.
 argument-hint: "[bootstrap-then-interview|bootstrap|interview] <target-dir> [--vulns <file>] [--design-doc <file>] [--seed <THREAT_MODEL.md>] [--fresh]"
 allowed-tools:
   - Read

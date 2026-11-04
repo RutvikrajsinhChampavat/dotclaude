@@ -20,9 +20,17 @@
     "command": "sh /Users/YOUR_USER/.claude/statusline-command.sh"
   },
 
+  "_claudeMdExcludes_comment": "Only rules/common auto-loads. These tiers stay out of every session and get read on demand (rule-audit reads the ones matching the files in scope).",
+  "claudeMdExcludes": [
+    "/Users/YOUR_USER/.claude/rules/review/**",
+    "/Users/YOUR_USER/.claude/rules/workflow/**",
+    "/Users/YOUR_USER/.claude/rules/typescript/**",
+    "/Users/YOUR_USER/.claude/rules/python/**"
+  ],
+
   "_personal_prefs_optional": "The block below is Rutvik's preference; adopt or drop per taste.",
   "model": "opus[1m]",
-  "effortLevel": "xhigh",
+  "effortLevel": "high",
   "advisorModel": "opus",
   "editorMode": "normal",
   "preferredNotifChannel": "terminal_bell",
@@ -58,32 +66,81 @@
         "source": "github",
         "repo": "JuliusBrussee/caveman"
       }
+    },
+    "claude-code-workflows": {
+      "source": {
+        "source": "github",
+        "repo": "wshobson/agents"
+      }
+    },
+    "impeccable": {
+      "source": {
+        "source": "github",
+        "repo": "pbakaus/impeccable"
+      },
+      "autoUpdate": true
+    },
+    "intent": {
+      "source": {
+        "source": "github",
+        "repo": "ghaida/intent"
+      }
+    },
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
+      }
+    },
+    "trailofbits": {
+      "source": {
+        "source": "github",
+        "repo": "trailofbits/skills"
+      }
+    },
+    "ui-ux-pro-max-skill": {
+      "source": {
+        "source": "github",
+        "repo": "nextlevelbuilder/ui-ux-pro-max-skill"
+      }
     }
   },
   "enabledPlugins": {
     "dotclaude-toolkit@dotclaude": true,
-    "superpowers@superpowers-marketplace": true,
-    "claude-session-driver@superpowers-marketplace": true,
-    "double-shot-latte@superpowers-marketplace": true,
+    "design-mock-workflow@dotclaude": true,
+    "superpowers@superpowers-marketplace": false,
+    "claude-session-driver@superpowers-marketplace": false,
+    "double-shot-latte@superpowers-marketplace": false,
+    "elements-of-style@superpowers-marketplace": false,
     "episodic-memory@superpowers-marketplace": true,
-    "superpowers-developing-for-claude-code@superpowers-marketplace": true,
-    "ralph-loop@claude-plugins-official": true,
+    "superpowers-developing-for-claude-code@superpowers-marketplace": false,
+    "ralph-loop@claude-plugins-official": false,
     "context7@claude-plugins-official": true,
-    "github@claude-plugins-official": true,
-    "frontend-design@claude-plugins-official": true,
+    "github@claude-plugins-official": false,
+    "frontend-design@claude-plugins-official": false,
     "code-review@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": true,
-    "code-simplifier@claude-plugins-official": true,
-    "feature-dev@claude-plugins-official": true,
-    "claude-debug-plugin@pzep1-claudecode-debug-mode": true,
+    "superpowers@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": false,
+    "feature-dev@claude-plugins-official": false,
+    "claude-debug-plugin@pzep1-claudecode-debug-mode": false,
     "caveman@caveman": true,
     "claude-code-setup@claude-plugins-official": true,
-    "pr-review-toolkit@claude-plugins-official": true,
+    "pr-review-toolkit@claude-plugins-official": false,
     "atlassian@claude-plugins-official": true,
-    "chrome-devtools-mcp@claude-plugins-official": true,
+    "chrome-devtools-mcp@claude-plugins-official": false,
     "remember@claude-plugins-official": true,
-    "qodo-skills@claude-plugins-official": true,
-    "figma@claude-plugins-official": true
+    "figma@claude-plugins-official": true,
+    "ponytail@ponytail": false,
+    "hookify@claude-plugins-official": true,
+    "static-analysis@trailofbits": false,
+    "playwright@claude-plugins-official": false,
+    "impeccable@impeccable": false,
+    "qodo@claude-plugins-official": false,
+    "ui-ux-pro-max@ui-ux-pro-max-skill": true,
+    "intent@intent": false,
+    "explanatory-output-style@claude-plugins-official": true,
+    "learning-output-style@claude-plugins-official": false
   }
 }
