@@ -1,17 +1,7 @@
 ---
 name: runtime-trace-debug
-description: >
-  Debug non-deterministic timing / state-accumulation / event-ordering bugs in a
-  RUNNING app — frontend OR backend — by instrumenting suspect code with tagged
-  runtime logs and reading the trace off something you can access directly, then
-  fixing from evidence instead of static guessing. Backend/CLI/worker: read the
-  service's own stdout/log file (docker compose logs, tail, journald). Browser
-  app where you can't read the console (esp. HTTPS/proxied SPAs where a separate
-  debug server is blocked by CORS/mixed-content): route logs through the app's
-  OWN origin to a file you read. Use when a bug only shows in the live app,
-  depends on timing / order / state built up across actions, and unit tests
-  can't reproduce it, AND the user can run it. Do NOT use for deterministic logic
-  bugs a failing unit test can pin, or when nothing is runnable.
+description: >-
+  Use when a non-deterministic bug (timing, event ordering, state built up across actions, duplicate/zombie work) only shows in a running frontend or backend app, unit tests can't reproduce it and the user can run it, incl. unreadable browser consoles. Not for deterministic bugs a failing test pins.
 ---
 
 # Runtime Trace Debugging (frontend or backend)

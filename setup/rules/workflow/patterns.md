@@ -22,6 +22,15 @@ Encapsulate data access behind a consistent interface:
 - Business logic depends on the abstract interface, not the storage mechanism
 - Enables easy swapping of data sources and simplifies testing with mocks
 
+## Previous-Value Sentinel Pattern
+
+When tracking a "previous value" to detect change (a ref/state compared against
+the current value each cycle), the initial sentinel must be a value OUTSIDE the
+domain of real values — never reuse a real value (like `null` for "nothing
+selected") as the "never yet initialized" marker. If the first real value can
+equal the sentinel, that first change goes undetected with no error. Use a
+distinct third state (e.g. `undefined` when `null` is a legitimate real value).
+
 ### API Response Format
 
 Use a consistent envelope for all API responses:

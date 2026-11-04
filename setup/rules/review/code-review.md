@@ -51,14 +51,16 @@ Before marking code complete:
 - Cryptographic operations
 - Payment or financial code
 
-## Review Severity Levels
+## Review Labels
 
-| Level | Meaning | Action |
+Labels are merge decisions, set after weighing impact × production likelihood.
+
+| Label | Meaning | Action |
 |-------|---------|--------|
-| CRITICAL | Security vulnerability or data loss risk | **BLOCK** - Must fix before merge |
-| HIGH | Bug or significant quality issue | **WARN** - Should fix before merge |
-| MEDIUM | Maintainability concern | **INFO** - Consider fixing |
-| LOW | Style or minor suggestion | **NOTE** - Optional |
+| `blocking:` | Security hole, data loss, or a bug reachable on normal use | Must fix before merge |
+| `suggestion:` | Real bug behind an unlikely-edge precondition, maintainability, missing test | Worth fixing, does not block |
+| `nit:` | Style, naming, wording | Optional |
+| `question:` | Unverified or unsure it is a defect | Author answers; may become any of the above |
 
 ## Agent Usage
 
@@ -130,9 +132,9 @@ Check them explicitly — most need repo-wide context the diff alone lacks:
 - **SRP / SoC:** one reason to change per unit; never mix layers (UI vs
   data-fetch vs transform). A name that needs "and" should be split.
 
-Severity: duplicated/diverging logic of an existing shared util = **MEDIUM**
-(fix before merge); a duplicate that introduces a latent runtime difference
-(locale, timezone, precision, ordering) = **HIGH**.
+Label: duplicated/diverging logic of an existing shared util = `suggestion:`;
+a duplicate that introduces a latent runtime difference (locale, timezone,
+precision, ordering) = `blocking:` when reachable.
 
 ### Performance
 
@@ -161,15 +163,14 @@ without a hot path or a profiler/measurement that justifies it. Flag the
 real cost, not theoretical micro-tuning. Prefer the simplest correct code
 until a measurement says otherwise.
 
-Severity: a regression that scales with input/users (N+1, O(n²) on real
-data, unbounded query, leak) = **HIGH**; a localized inefficiency on a cold
-path = **LOW/MEDIUM**.
+Label: a regression that scales with input/users (N+1, O(n²) on real
+data, unbounded query, leak) = `blocking:`; a localized inefficiency on a cold
+path = `nit:` or `suggestion:`.
 
 ## Approval Criteria
 
-- **Approve**: No CRITICAL or HIGH issues
-- **Warning**: Only HIGH issues (merge with caution)
-- **Block**: CRITICAL issues found
+- **Request Changes**: any `blocking:` finding
+- **Approve**: no `blocking:` findings (open `question:`s answered first)
 
 ## Integration with Other Rules
 

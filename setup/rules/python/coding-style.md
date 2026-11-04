@@ -39,7 +39,7 @@ class Point(NamedTuple):
 
 ## Reference
 
-See skill: `python-patterns` for comprehensive Python idioms and patterns.
+See skill: `python-pro` for type hints, Python idioms, and standard-library patterns.
 
 ## Database Queries
 

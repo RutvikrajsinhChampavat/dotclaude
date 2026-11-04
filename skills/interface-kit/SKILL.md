@@ -78,8 +78,10 @@ Maximalist design demands elaborate code — layered backgrounds, complex grid s
 When building without an existing design system, avoid these overused defaults that signal "AI-generated":
 
 - **Fonts**: Inter, Roboto, Arial, system-ui as display fonts, Space Grotesk
-- **Colors**: Purple-to-blue gradients on white backgrounds
-- **Patterns**: Generic hero with centered text + CTA + stock illustration
+- **Colors**: Purple-to-blue gradients on white backgrounds, slate-900 as the default heading/text color
+- **Layout**: generic hero with centered text + CTA + stock illustration (incl. over a dark mesh gradient), three equal feature cards
+- **Effects**: glassmorphism applied indiscriminately across every card/panel instead of one deliberate surface
+- **Motion**: infinite-loop micro-animations with no interaction trigger — conflicts with the frequency framework in §7, which gates animation on how often a user hits that element
 
 Vary between light and dark themes, different font pairings, different aesthetic directions. Never converge on the same choices across projects.
 

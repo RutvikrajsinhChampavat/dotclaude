@@ -10,7 +10,7 @@
 #   ./install.sh --all                 # install everything
 #   ./install.sh --skill rule-audit --skill tdd-workflow
 #   ./install.sh --agent code-reviewer --agent planner
-#   ./install.sh --rule typescript/security --rule common/code-review
+#   ./install.sh --rule typescript/security --rule review/code-review
 #   ./install.sh --skills --rules      # whole groups
 #   ./install.sh --claude-md --statusline --settings
 #
@@ -18,7 +18,7 @@
 #   --all
 #   --skills | --skill NAME        (repeatable)
 #   --agents | --agent NAME        (repeatable)
-#   --rules  | --rule  PATH        (repeatable, e.g. common/code-review)
+#   --rules  | --rule  PATH        (repeatable, e.g. review/code-review)
 #   --claude-md  --statusline  --settings
 #   --list  -h|--help
 set -eo pipefail
