@@ -22,6 +22,19 @@ Restart Claude Code. Confirm it loaded — ask Claude to list skills/agents, or 
 
 > The plugin carries skills + agents + hooks only. For `CLAUDE.md`, `rules/`, and the statusline, run the installer below with the components you want.
 
+### Standalone: `design-mock-workflow`
+
+Options-first UI workflow. Before any UI code changes, Claude builds distinct, interactive
+design options on your real components and data, grades each /100, and waits for your pick.
+Installs on its own, separate from the toolkit:
+
+```
+/plugin marketplace add RutvikrajsinhChampavat/dotclaude
+/plugin install design-mock-workflow@dotclaude
+```
+
+Details: [plugins/design-mock-workflow/README.md](plugins/design-mock-workflow/README.md).
+
 ### Option B — À-la-carte installer (pick exactly what you want)
 
 ```bash
