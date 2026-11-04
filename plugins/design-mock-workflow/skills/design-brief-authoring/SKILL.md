@@ -1,0 +1,93 @@
+---
+name: design-brief-authoring
+description: >-
+  Use when briefing a tool with no codebase access (Claude Design, a design agent, a contractor) to generate options-first UI options outside this session: "write a prompt for Claude Design", "a design brief", "something I can paste into the design tool", or a handoff came back as wireframes.
+---
+
+# Design brief authoring
+
+## Overview
+
+The tool on the other end sees nothing but your text. Every fact it needs must be in the brief,
+every fact that is wrong becomes a design built on fiction, and the brief's SHAPE decides whether
+it returns designs or a labelled diagram.
+
+Two things produce a good brief: the aesthetic bar arrives before the engineering detail, and
+every factual claim was verified before it was written down.
+
+## When to use
+
+- Authoring a brief for an external design tool that has no access to the codebase (Claude Design, a design agent, a contractor) so it returns UI design options for a feature.
+- Reaching the options-first gate with the options to be generated outside this session.
+- A previous handoff came back as a wireframe, a spec sheet, a grid of static frames, ten shades of one idea, or designs built on behaviour the code does not have.
+
+## Workflow
+
+**1. Fill the fact table.** `references/discovery.md` has the recipes. Its step 0 comes first and
+settles two things the rest depends on: what the stack is, and whether the surface exists yet. Its
+commands are examples for one stack — translate them, do not assume the project looks like the
+last one. Every row carries the command that proved it; a row you could not verify says
+`UNVERIFIED` and is cut from the brief.
+
+**2. Write the brief** from `references/brief-template.md`. Sections in that order — section 2 is
+the design bar, and it comes before any schema, token or defect. Early text is weighted; a quality
+bar appended at the end is ignored.
+
+**3. De-slop it.** The brief is a standalone artifact a human reads. Cut the AI tells: filler
+openers, "not X but Y" framing, triplet lists for rhythm, inflated adjectives, em-dash chains.
+If your setup has a de-slop / humanize skill, run it here.
+
+**4. Hand off** the file, and tell them to attach their own screenshot if the brief references one.
+
+## The fact table is the gate
+
+The brief may only contain facts from a filled row. Build it before drafting, not after.
+
+Example rows, from one web project — yours will name different files:
+
+| Fact | Value | Verified by |
+|---|---|---|
+| Panel width | 24.5rem against a fluid root, ~360–392px | `constants/layout.ts:<line>` |
+| Does the list refresh itself | no polling; refetches on write only | `grep -A3 invalidatesTags <api-slice>` |
+| Which run compare uses as baseline | pinned, else latest; both must be finished | `<compare-util>.ts:<line>` |
+
+A claim that sounds right is the exact thing that ships wrong. Behaviour, defaults, and "it
+updates live" are where it happens.
+
+## The one prohibition
+
+**Never put selection criteria or a self-grading rubric in the outgoing brief.** No weighted
+dimensions, no "score each direction /100", no comparison matrix. A design tool asked to grade
+itself returns evaluation artefacts instead of designs. Ask for a named thesis per direction and a
+recommendation in prose.
+
+Your own /100 grading of what comes back (the `ui-options-first` rubric) is untouched by this — that happens after, before the
+options reach your human partner. The ban is only on text leaving this session.
+
+## Red flags
+
+- About to write a behaviour claim you have not grepped this session
+- The brief opens with a schema, a type, or a defect list
+- States are listed as frames to draw rather than things reachable by clicking
+- One theme's values present when the product ships more than one
+- A value copied from memory, from a sibling surface, or from a previous brief rather than read off
+  this surface's own files
+- A value table with one provenance note covering every row
+- Discovery commands run verbatim from the reference against a stack they were not written for
+- No sentence anywhere says what the data does NOT have
+- Nothing distinguishes what the surface can KNOW from what it can DRAW
+- The build envelope is written as a veto list rather than as costs the designer may choose to pay
+
+## Common mistakes
+
+**Volume instead of signal.** Every field of every type dilutes the brief. Paste the shapes that
+cover the type space, and say plainly what is absent.
+
+**Comparables named without the pattern.** "Study Linear" gives nothing. "Linear's issue list, for
+per-row actions that appear on hover without the row reflowing" gives a mechanism.
+
+**Designing for an expert when the product is not for experts.** Check who actually uses the
+surface before licensing icon-only controls.
+
+**Asking for no code, then describing implementation.** The brief says "design only, no framework
+code" and then must itself contain no component names, no class names, no props.
