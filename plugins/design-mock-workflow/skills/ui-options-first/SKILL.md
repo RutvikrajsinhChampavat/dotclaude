@@ -87,8 +87,9 @@ Never present an empty search as data.
 
 ## Step 2: Paper-sketch every direction, then GRADE BEFORE BUILDING
 
-Write each candidate as two or three lines: the affordance, the interaction, the cost. Score
-them all against the rubric below **while they are still prose**.
+Write each candidate as two or three lines: the affordance, the interaction, the cost, plus one
+line on its loading, empty and error treatment (see "States are designed"). Score them all
+against the rubric below **while they are still prose**.
 
 - Cut or rework anything under 90 now. Building a fully interactive option and then finding it
   scores 62 is pure waste.
@@ -111,6 +112,47 @@ one of them, you have not delivered N families.
 
 Record the pre-build scores. Re-score after building (Step 5) and report both. The delta is the
 useful signal about what the build revealed.
+
+## Step 2b: Prominence map. Decide how loud each section is before styling it
+
+Attention is a fixed budget: making one section louder takes it from every other. So before any
+styling, rank every section of the surface on four axes:
+
+| Axis | Scale | Source |
+|---|---|---|
+| **Frequency** | every visit · daily · weekly · rare · once | usage data if it exists, else the captured fixtures and the user's own words. Tag `estimated` |
+| **Value** | what using it earns or saves the user | the task the surface exists for |
+| **Urgency** | needs action now? | state in the data (errors, pending approvals, expiring items) |
+| **Depth** | glance · scan · work (how much lives inside) | the fixture: field count, list length, interaction needed |
+
+Derive one tier per section:
+
+- **Primary.** ONE per view. Top-left or centre of the reading path, the most size and
+  contrast, closest to the entry point. Frequent AND valuable.
+- **Secondary.** Visible at rest, compact, quieter type and colour.
+- **Tertiary.** Behind disclosure: tab, drawer, overflow menu, hover/focus reveal. Rare or low
+  value.
+- **Contextual.** Absent until its state applies (empty, error, first-run, selection).
+
+Rules that bind the tiers:
+
+- **Urgency overrides frequency.** A rare destructive confirm, an error, a pending approval
+  jumps to primary while its state is live, then drops back.
+- **Depth sets the disclosure level, not the tier.** Glance: inline. Scan: expandable row or
+  popover. Work: its own panel or route. A primary section can still be a glance.
+- **Frequency sets proximity.** The more often it's used, the fewer clicks and the less travel
+  from where the user lands.
+- **Prominence is state-dependent.** First-run vs steady state, empty vs full, and role (admin
+  vs end user) can reorder tiers. Show it per state, not once.
+- **Never override a decided design.** Exact Figma, an imported spec, or a placement the user
+  named wins; the map then only feeds the score.
+
+The map is NOT a confirmation stop. It ships inside the mock as the hierarchy overlay (see "Mock
+chrome") and in the grading panel, so the user challenges the ranking while looking at it. Every
+`estimated` frequency is labelled as estimated there, never shown as measured.
+
+Two options that rank sections differently ARE genuinely distinct directions: a valid family to
+offer, not a variant of one.
 
 ## Step 3: Build the mock. Fidelity tiers, highest available wins
 
@@ -178,12 +220,17 @@ Fixtures in the mock, not assertions in prose. A number you assert is not a numb
 6. **Runtime smoke when you can't see the render.** A 200 from the route proves it compiled, not
    that it runs. Render the page once in a throwaway jsdom test (stub canvas and
    `Element.animate`), drive the core interaction, then delete the test.
+7. **Motion.** List every animated element with its computed `transition-duration` /
+   `animation-duration` (or its JS animation config) and its prominence tier. Flag any duration
+   outside its tier's budget (see "Motion budget") and any element that still moves with
+   `prefers-reduced-motion: reduce` emulated.
 
 ## Step 5: Re-score, show the grades, then deliver
 
 Re-score every built option. Anything under 90, or breaching a hard floor, is reworked or
 replaced **before** the user sees it. Ship the grading panel inside the mock so the user can
-challenge the judgement while looking at the design.
+challenge the judgement while looking at the design. The panel includes each option's
+prominence map (section, tier, the four axis values, and which are `estimated`).
 
 Confirm it actually rendered before handing off. Report what you verified visually versus
 programmatically. Never describe a frame you did not see.
@@ -199,6 +246,129 @@ Real component, design tokens (never hardcoded hex), and your project's full lin
 test and review gates green. Some build configs ignore type errors (Next.js
 `ignoreBuildErrors`), so a green build proves nothing: run the type checker on the touched files
 yourself. Delete the mock and any throwaway route afterwards.
+
+---
+
+## States are designed, not defaulted
+
+Loading, empty and error are part of every option's design, not a shared fallback bolted on
+after the pick. Each option designs its own, in the same visual language as its populated state,
+and the state switcher (see "Mock chrome") shows all of them. A state that falls back to a
+generic component (centred spinner, icon + "No data", red "Something went wrong") counts as
+NOT designed.
+
+**Loading**
+
+- Skeleton shaped like THAT option's content: same row heights, line lengths, tile sizes. Two
+  options with different layouts get different skeletons.
+- Show what is already known (headers, labels, cached values) and skeleton only the unknown.
+  Never blank the whole surface for one slow field.
+- Hold the skeleton back ~300ms so a fast load doesn't flash; cross-fade to content with zero
+  layout shift.
+- Actions in flight (save, retry) show progress on the control itself and keep its size.
+
+**Empty** comes in kinds, and each reads differently:
+
+- **First run** (nothing has ever existed): say what will appear here and why it matters, plus
+  ONE primary action that fills it. This is the one state allowed a little delight.
+- **Filtered to nothing**: name the filter or query and offer to clear it. Never the first-run copy.
+- **Cleared / all done** (inbox zero, nothing needs attention): a calm confirmation, no call to
+  action.
+- **Not available** (permission, plan, feature off): say who can grant it, never a dead end.
+
+**Error** comes in kinds too:
+
+- **Load failed**: what failed in plain words, keep anything that did load, a retry next to it.
+- **Partial**: one source or section failed. Degrade that section only and say which; the rest
+  stays usable.
+- **Action failed** (save, switch, delete): inline beside the control that triggered it, the
+  user's input preserved, the exact next step. Never only a toast.
+- **No access** (403): a lock state that names the role needed and who grants it, distinct from
+  load failure.
+
+Every error message answers: what happened, whether anything was lost, what to do now.
+
+**Data and grading**
+
+- Capture the real error responses too (status code + body shape) into the fixtures, the same
+  as the happy path. A designed error built on an invented payload names the wrong cause.
+- Each state gets its own prominence map: in an error state the error is primary; in first-run
+  the filling action is.
+- Grade every option in every state, and report the WEAKEST state's score next to the populated
+  one. An option that is beautiful when full and generic when empty has not passed.
+
+---
+
+## Mock chrome: what every mock ships with
+
+A floating, collapsible toolbar outside the stage (never inside the design being judged). It
+makes the mock answer "what does this feel like in every situation" without the user asking.
+
+**Default, every mock, first build:**
+
+1. **State switcher.** Empty · loading · populated · error · overflow · first-run, each driven
+   by a real captured fixture (overflow = the longest or largest real case). Loading renders
+   **skeletons shaped like the real content** (same row heights, line lengths, avatar slots),
+   never a centred spinner; the skeleton-to-content swap cross-fades with no layout shift.
+2. **Hierarchy overlay.** A toggle (`H`) that tints each section by its Step 2b tier and labels
+   it `primary / secondary / tertiary / contextual` with its axis values; `estimated` ones say
+   so. Re-tints per state, since prominence is state-dependent.
+3. **Compare mode.** Keys `1` `2` `3`… swap options inside the SAME frame and state, keeping
+   scroll and selection, so differences read as a flip rather than a scroll. A short cross-fade
+   (~200ms) between options; instant under reduced motion.
+4. **Play + rationale hotspots.** `▶ Play` auto-runs the primary flow (scripted clicks with a
+   visible cursor, 1–2s per step, stoppable), so the motion choreography is seen without
+   clicking through. `?` reveals numbered pins on the stage; each opens a one-line rationale.
+   This is where reasoning lives, so the stage stays clean.
+
+**Optional, when the surface calls for it:** persona/role switcher (when frequency differs by
+role), viewport presets (mobile / tablet / desktop frames) and a density toggle, a ⌘K command
+palette and shortcuts (only on surfaces a power user hits daily).
+
+Toolbar keys must not collide with keys the design itself handles; list them in the toolbar.
+
+---
+
+## Motion budget: where motion goes, and how much
+
+Motion has a job or it doesn't ship. Four jobs: **continuity** (where did it come from / go),
+**feedback** (press, success, failure), **attention** (look here, now), **data change** (a value
+moved, a list reordered). Decoration is not a job.
+
+Budget by prominence tier (Step 2b):
+
+| Tier | Allowed | Not allowed |
+|---|---|---|
+| Primary | all four jobs; one attention cue on entry or on urgent state | looping attention after the user engaged |
+| Secondary | feedback, continuity, data change | attention |
+| Tertiary | reveal continuity only (drawer, menu, hover reveal) | everything else |
+| Contextual | enter/exit continuity; attention only if urgent | lingering motion after dismissal |
+
+**Frequency caps duration.** An action the user repeats many times a day (row select, tab
+switch, toggle) stays ≤150ms or is instant. A 300ms flourish seen 50 times a day becomes
+friction. One-time moments (first load, success of a big task) may run longer.
+
+Timing defaults (use the project's own motion tokens when it has them):
+
+- Micro (press, hover, toggle): 120–180ms. Panels, drawers, popovers: 200–300ms. Route or large
+  surface: 300–400ms. Nothing over 500ms except a deliberate one-time moment.
+- Enter = ease-out, exit = ease-in and ~20% shorter than enter. Drag, resize, throw = spring.
+- Stagger lists 30–50ms per item, cap at ~6 items, then the rest appear together.
+- Animate `transform` and `opacity`; animate size only on containers with a fixed inner size.
+
+Techniques that earn their place:
+
+- **Shared-element transitions** for list → detail and card → panel, so the user tracks the
+  object instead of re-finding it.
+- **FLIP / layout animation** for reorder, filter and insert: rows slide, never jump.
+- **Count-up / number tween** for KPI and total changes (primary/secondary only).
+- **Drawn checkmark or brief tint** for success; **short shake or tint** for failure. Feedback,
+  then still.
+- **Press scale** (~0.97) and hover lift (elevation, not size) on interactive cards.
+- **Optimistic update** with a settle animation, so the action feels instant.
+
+Reduced motion: replace movement with opacity or nothing, and keep the state change itself. The
+Step 4 motion check covers both the budget and this path.
 
 ---
 
@@ -226,7 +396,9 @@ interaction to "keep it minimal", you're cutting the wrong thing.
 **Motion is default, not on request.** Every surface that appears, disappears, expands, or
 changes selection animates in the first build (enter/exit, expand/collapse, selection feedback,
 hover reveals), with `prefers-reduced-motion` honoured. When a column or well animates
-width/height, give its content a fixed inner size so it doesn't reflow mid-animation.
+width/height, give its content a fixed inner size so it doesn't reflow mid-animation. How MUCH
+motion each surface gets is set by "Motion budget" below: default-on never means everything
+flourishes.
 
 **Carve-out:** code the mock's SUBJECT depends on isn't ceremony. A stable node-types identity
 in a graph library, or memoization when the thing being evaluated IS render performance, stays.
@@ -249,11 +421,12 @@ ever promoted into the app rather than rewritten, it owes every gate retroactive
 
 | Dimension | Weight | What earns it |
 |---|---|---|
-| **UX clarity** | 25 | A non-technical user understands it with no tooltip. Primary action obvious. Progressive disclosure in the right order: summary before payload, never a raw dump. |
+| **UX clarity** | 20 | A non-technical user understands it with no tooltip. Primary action obvious. Progressive disclosure in the right order: summary before payload, never a raw dump. |
+| **Hierarchy fit** | 15 | Prominence matches the Step 2b map: one primary per view, frequent and valuable sections nearest the entry point, rare ones disclosed, urgent states promoted while live. Motion budget follows tier. Every state (empty, first-run, error, overflow) keeps a sane ranking. |
 | **Visual craft** | 20 | Layered elevation over borders. 4px spacing rhythm. Concentric radii. Type hierarchy carrying meaning. Restrained colour: status as accent, never fill. Monospace only for data. |
-| **Density** | 15 | Compact without crowding. Costs little at rest. No dead space, no cramming. |
+| **Density** | 10 | Compact without crowding. Costs little at rest. No dead space, no cramming. |
 | **Accessibility** | 15 | Measured contrast ≥4.5:1 in both themes. Keyboard reachable. Adequate hit targets. Reduced motion honoured. Never colour alone to convey state. |
-| **Domain fit** | 15 | Behaves correctly in its real container: under zoom/pan for a canvas, resize for a panel, long content for a list. No occlusion, no reflow of neighbours. |
+| **Domain fit** | 10 | Behaves correctly in its real container: under zoom/pan for a canvas, resize for a panel, long content for a list. No occlusion, no reflow of neighbours. |
 | **Implementation cost** | 10 | Reuses existing components. Few new surfaces. Performs on realistic data volume. |
 
 **Hard floor: any dimension below 60% of its weight fails the option outright, regardless of
