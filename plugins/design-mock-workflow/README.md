@@ -19,10 +19,11 @@ graded /100 against a fixed rubric. You pick one, and Claude implements that.
 
 0. Read `design-mocks/REFERENCES.md`, the project's sourced notes on how comparable products solve this. On first run Claude researches the domain and creates it; without web access it writes entries marked `inferred`.
 1. Generate directions (with `ui-ux-pro-max` and `interface-kit` if installed).
-2. Paper-sketch each direction, grade it /100, and cut anything under 90 **before** building. Then map how prominent each section should be from how often it's used, what it's worth, how urgent it is and how deep it goes.
+2. Paper-sketch each direction, grade it /100, and cut anything under 90 **before** building. Every round has at least 3 **Simple** options (conventional, cheap to ship) and 3 **Creative** ones (new layout or interaction, richer visuals). Then map how prominent each section should be from how often it's used, what it's worth, how urgent it is and how deep it goes.
 3. Build at the highest fidelity available: a throwaway route on the real component library, then real compiled CSS, then static HTML on real tokens. Feed it captured, redacted real data. Each option designs its own loading, empty and error states (graded at its weakest state), not a shared fallback. Every mock ships a toolbar: state switcher, hierarchy overlay, side-by-side compare, a Play walkthrough and rationale pins. Motion follows a budget set by each section's prominence.
-4. Put runnable checks in the mock: contrast in both themes, icon subset, geometry, paint, visibility, motion budget.
-5. Re-grade the built options, ship the grading panel inside the mock, and recommend one.
+4. Put runnable checks in the mock: contrast in both themes, icon subset, geometry, paint, visibility, motion budget, craft details (concentric radii, tabular numbers, every control state, no layout shift).
+   Then a craft pass: screenshot each option, critique it as a design director, fix the top three issues, rewrite the microcopy, and run a task test and a 5-second test. Each sketch names its best-in-class benchmark; each Creative option names its signature moment.
+5. Re-grade the built options, have a fresh subagent grade them independently (the lower grade counts), ship the grading panel inside the mock, and recommend one.
 6. Wait for the pick.
 7. Implement it with tokens and your normal gates, then delete the mock.
 
