@@ -11,6 +11,10 @@ graded /100 against a fixed rubric. You pick one, and Claude implements that.
 | `ui-options-first` | Any visual change: colour, layout, component, icon, spacing, animation. Holds the 7-step flow, the rubric, fidelity tiers, runnable checks and fixture rules. |
 | `design-brief-authoring` | The options will come from a tool with no codebase access (Claude Design, a design agent, a contractor). Writes a verified, design-first brief. |
 
+| Command | Does |
+|---|---|
+| `/design-mock <what to change>` | Starts the flow on demand. Use it when the skill didn't fire on its own, or to be explicit. Shows as `/design-mock-workflow:design-mock` if another `/design-mock` exists. |
+
 ## The flow in one screen
 
 0. Read `design-mocks/REFERENCES.md`, the project's sourced notes on how comparable products solve this. On first run Claude researches the domain and creates it; without web access it writes entries marked `inferred`.
@@ -40,6 +44,10 @@ want it) into `~/.claude/skills/`.
 
 Once installed, the skills are listed as `design-mock-workflow:ui-options-first` and
 `design-mock-workflow:design-brief-authoring`.
+
+**Not showing up?** Plugins load when a session starts. After installing, start a new session,
+then type `/design-mock` to check. If it's missing, run `/plugin`
+and confirm `design-mock-workflow` is installed and enabled for this project's scope.
 
 ### Recommended companions (third-party, installed separately)
 
