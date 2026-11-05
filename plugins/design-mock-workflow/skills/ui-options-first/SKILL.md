@@ -88,13 +88,48 @@ Never present an empty search as data.
 ## Step 2: Paper-sketch every direction, then GRADE BEFORE BUILDING
 
 Write each candidate as two or three lines: the affordance, the interaction, the cost, plus one
-line on its loading, empty and error treatment (see "States are designed"). Score them all
-against the rubric below **while they are still prose**.
+line on its loading, empty and error treatment (see "States are designed"). Add two more lines:
+
+- **Benchmark.** The product that does this pattern best, and the one thing this option copies
+  from it or beats it on ("beats Linear's issue list on scan speed: status reads before title").
+  Name a real product, never "best practice". The grading panel shows this line per option.
+- **Signature moment** (Creative only). The one interaction a user would remember and describe
+  to someone else ("the path lights stage by stage as the mode changes"). No signature moment
+  means it is not a Creative option yet.
+
+Score them all against the rubric below **while they are still prose**.
 
 - Cut or rework anything under 90 now. Building a fully interactive option and then finding it
   scores 62 is pure waste.
 - Directions must be genuinely different *approaches*. Ten shades of one idea is one option.
 - Keep the survivor count honest: six strong directions beat twelve where four are filler.
+
+### The option set: at least 3 Simple and 3 Creative
+
+Every round delivers two tracks, at least three built options each, labelled on the option tab
+and in the grading panel:
+
+- **Simple.** The conventional answer done very well. Existing components and patterns, few new
+  parts, low implementation cost, shippable this sprint. Users already know how it works.
+- **Creative.** The fancy answer. A new layout, interaction or visual idea: signature motion,
+  rich data display, direct manipulation, a layout the product doesn't have yet. Still built on
+  the real tokens and components. Still has to work on real data and pass the hard floors.
+
+Rules:
+- **Distinct inside each track.** Three Simple options that differ only in spacing are one
+  option. Same for Creative.
+- **Creative is not Simple plus animation.** If you can turn the motion off and get one of the
+  Simple options back, it belongs in Simple. A Creative option changes structure or interaction.
+- **Both tracks clear 90.** Creative options will score lower on Implementation cost, so they
+  have to earn it back on UX clarity, Hierarchy fit and Visual craft. A track short of three
+  survivors gets reworked or replaced inside that track. Never backfill one track from the other.
+- **Sketch more than you build.** Paper-sketch 4 to 5 per track in this step and build the best 3.
+- **User-named families still count.** Tag each named family Simple or Creative, then top up
+  each track to three.
+- **The user's count wins.** If they ask for a specific number ("just two options"), deliver
+  that and say which track each one is.
+
+Step 6 recommends one overall and names the best of the other track as the alternative.
 
 **Cover every family the user named. Research informs HOW, never WHETHER.** If the ask is
 "show me three approaches: in the node, in a panel, in a card", deliver all three, even when the
@@ -224,6 +259,44 @@ Fixtures in the mock, not assertions in prose. A number you assert is not a numb
    `animation-duration` (or its JS animation config) and its prominence tier. Flag any duration
    outside its tier's budget (see "Motion budget") and any element that still moves with
    `prefers-reduced-motion: reduce` emulated.
+8. **Craft.** The last-10% details, checked from computed styles and rects, failures listed in
+   the grading panel:
+   - nested corners are concentric: inner radius = outer radius minus padding (within 1px);
+   - every column of figures uses `font-variant-numeric: tabular-nums`;
+   - headings use `text-wrap: balance`, body paragraphs `text-wrap: pretty`;
+   - every interactive control has distinct hover, focus-visible, active and disabled styles
+     (diff the computed styles across forced states; identical means missing);
+   - scroll containers with overflow show an edge fade or shadow;
+   - icons beside text sit on the same optical line (icon box centre within 1px of the text
+     x-height centre);
+   - raised surfaces use layered shadows (two or more layers), not one flat shadow or a border alone;
+   - no layout shift when loading resolves: record the rects of stable landmarks in the loading
+     and populated states; any landmark that moves is a failure.
+
+## Step 4b: Craft pass. Look, critique, fix
+
+A mock nobody has looked at is not finished. Before grading:
+
+1. **Look.** Screenshot every option in the populated state and its weakest state, in both
+   themes. Screenshots only: no click loops, no logging in. If your rules forbid driving a
+   browser, or the route sits behind a login, use the runtime smoke render instead and say the
+   craft pass ran blind.
+2. **Critique as a design director.** Review each screenshot as "what would the design lead at
+   the benchmark product change?" (with a design-critique skill if one is installed). Fix the
+   top three issues per option, re-screenshot, and keep the before/after pair for the panel.
+3. **Microcopy.** Review every label, button, empty state and error message (with a UX-copy
+   skill if one is installed). Buttons name the action ("Use documents only", not "Confirm").
+   Errors say what happened and what to do. Empty states say why it's empty and offer the next
+   step.
+4. **Interaction patterns.** For each option, decide and record in the panel: an undo toast
+   instead of a confirm dialog for reversible actions; an optimistic update where the write
+   rarely fails; inline edit instead of a modal for single fields; keyboard shortcuts on
+   daily-use surfaces; a command palette entry if the product has one. A "no" needs a
+   one-line reason.
+5. **Task test.** Give each option one real task the user has on this screen ("find the failing
+   source and fix it"). Walk it in Play mode and record the step count per option in the panel.
+   Then a **5-second test**: what does the eye land on first? It must be the Step 2b primary.
+   If it isn't, Hierarchy fit loses points.
 
 ## Step 5: Re-score, show the grades, then deliver
 
@@ -232,12 +305,19 @@ replaced **before** the user sees it. Ship the grading panel inside the mock so 
 challenge the judgement while looking at the design. The panel includes each option's
 prominence map (section, tier, the four axis values, and which are `estimated`).
 
+**Independent grader.** Self-grading inflates. After you score, dispatch a fresh subagent with no
+access to your scores. Give it the rubric, the prominence map, the Step 4b screenshots and the
+option's code, and have it grade every option. Show both grades in the panel. Where the two
+totals differ by 10 or more, or either breaches a hard floor, show the grader's reasons next to
+yours and rework before delivering. The option's grade is the lower of the two.
+
 Confirm it actually rendered before handing off. Report what you verified visually versus
 programmatically. Never describe a frame you did not see.
 
 ## Step 6: Wait for the pick
 
-Recommend one. The user decides. Do not start implementing on the strength of your own
+Recommend one, and name the best option from the other track (Simple or Creative) as the
+alternative. The user decides. Do not start implementing on the strength of your own
 recommendation.
 
 ## Step 7: Implement the chosen option
@@ -421,9 +501,9 @@ ever promoted into the app rather than rewritten, it owes every gate retroactive
 
 | Dimension | Weight | What earns it |
 |---|---|---|
-| **UX clarity** | 20 | A non-technical user understands it with no tooltip. Primary action obvious. Progressive disclosure in the right order: summary before payload, never a raw dump. |
+| **UX clarity** | 20 | A non-technical user understands it with no tooltip. Primary action obvious. Progressive disclosure in the right order: summary before payload, never a raw dump. Low task-test step count. Copy names actions and explains errors. |
 | **Hierarchy fit** | 15 | Prominence matches the Step 2b map: one primary per view, frequent and valuable sections nearest the entry point, rare ones disclosed, urgent states promoted while live. Motion budget follows tier. Every state (empty, first-run, error, overflow) keeps a sane ranking. |
-| **Visual craft** | 20 | Layered elevation over borders. 4px spacing rhythm. Concentric radii. Type hierarchy carrying meaning. Restrained colour: status as accent, never fill. Monospace only for data. |
+| **Visual craft** | 20 | Layered elevation over borders. 4px spacing rhythm. Concentric radii. Type hierarchy carrying meaning. Restrained colour: status as accent, never fill. Monospace only for data. Step 4 craft checks pass. Creative options land their signature moment. |
 | **Density** | 10 | Compact without crowding. Costs little at rest. No dead space, no cramming. |
 | **Accessibility** | 15 | Measured contrast ≥4.5:1 in both themes. Keyboard reachable. Adequate hit targets. Reduced motion honoured. Never colour alone to convey state. |
 | **Domain fit** | 10 | Behaves correctly in its real container: under zoom/pan for a canvas, resize for a panel, long content for a list. No occlusion, no reflow of neighbours. |
