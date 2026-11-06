@@ -28,7 +28,8 @@ or match them.
    If no context file is given, say so in your first line and grade generically.
 2. The prominence map for this surface (which section is primary, secondary, tertiary,
    contextual, and why).
-3. The screenshots of each option: populated state and weakest state, both themes.
+3. The screenshots of each option: populated and weakest state in both themes at Desktop, plus
+   the populated state at Phone and Wide.
 4. The option code, only when a screenshot can't settle a question (a hover state, a motion
    duration, how a state is handled).
 
@@ -44,7 +45,7 @@ the option outright, whatever the total.
 | Visual craft | 20 | Layered elevation, consistent spacing rhythm, concentric radii, type hierarchy that carries meaning, restrained colour (status as accent, not fill), tabular numbers, every control state designed. Creative options land their signature moment. |
 | Density | 10 | Compact without crowding. No dead space, no cramming. |
 | Accessibility | 15 | Contrast at least 4.5:1 for text in both themes, keyboard reachable, adequate hit targets, reduced motion honoured, never colour alone for state. |
-| Domain fit | 10 | Works in its real container and at real data volume: long names, many rows, empty, error. Fits the product's existing shell and vocabulary. |
+| Domain fit | 10 | Works in its real container and at real data volume: long names, many rows, empty, error. Fits the product's existing shell and vocabulary. Works at every screen size from phone to wide: no sideways scroll, primary still first, touch targets at least 44px. |
 | Implementation cost | 10 | Reuses existing components, few new surfaces, performs on realistic data. |
 
 Calibration, so scores mean the same thing every time:

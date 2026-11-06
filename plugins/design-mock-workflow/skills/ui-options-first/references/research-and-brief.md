@@ -74,6 +74,9 @@ first run. Keep it to one page, in this shape:
 - <rules that make an option wrong here: label case, tooltip policy, known contrast failures,
   layout shells and their widths, one-primary-action rule, banned patterns>
 
+## Screens
+<the devices and widths people actually use this on, and any that must only "not break">
+
 ## Quality bar
 <the two or three products this one should feel like, and why>
 ```

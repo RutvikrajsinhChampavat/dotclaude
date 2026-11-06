@@ -32,8 +32,8 @@ ends at the mock.
 
 When the implementation runs:
 
-1. Screenshot the real build in the same states, themes and viewport as the mock's populated
-   and weakest states (same screenshot rules as the Step 4b craft pass).
+1. Screenshot the real build in the same states, themes and screen sizes as the mock's
+   populated and weakest states (same screenshot rules as the Step 4b craft pass).
 2. Compare each pair against the mock and the spec. List every difference: spacing, alignment,
    type, colour, missing state, motion timing, copy.
 3. Re-run the mock's runnable checks (contrast, craft, motion) against the real page where they

@@ -23,7 +23,7 @@ choosing blind.
 | `references/research-and-brief.md` | REFERENCES.md shape, GRADER-CONTEXT.md template and update rules, DECISIONS.md taste log | Step 0, Step 6 |
 | `references/rubric.md` | The /100 rubric, hard floors | Step 2, Step 5 |
 | `references/build.md` | Fidelity tiers, captured data fixtures, route hygiene, live animations, mock-code exemption | Step 3 |
-| `references/states-and-chrome.md` | Designed states, mock toolbar (incl. feedback pins), motion budget | Step 3 |
+| `references/states-and-chrome.md` | Designed states, mock toolbar (incl. feedback pins), motion budget, screen sizes | Step 3 |
 | `references/checks-and-craft.md` | Runnable checks, craft pass | Steps 4, 4b |
 | `references/handoff.md` | Implementation spec and fidelity check | Step 7 |
 
@@ -68,6 +68,9 @@ line on its loading, empty and error treatment (see "States are designed", `refe
 - **Benchmark.** The product that does this pattern best, and the one thing this option copies
   from it or beats it on ("beats Linear's issue list on scan speed: status reads before title").
   Name a real product, never "best practice". The grading panel shows this line per option.
+- **Screen sizes.** How the option adapts from phone to wide desktop: what reflows, what
+  collapses behind disclosure, what the primary becomes on a phone. An option that only works at
+  one width is not done. See "Screen sizes" in `references/states-and-chrome.md`.
 - **Signature moment** (Creative only). The one interaction a user would remember and describe
   to someone else ("the path lights stage by stage as the mode changes"). No signature moment
   means it is not a Creative option yet.
@@ -168,7 +171,7 @@ offer, not a variant of one.
 
 Build at the highest fidelity available, on REAL captured data. **Read `references/build.md` now**: fidelity tiers (real route > real compiled CSS > static HTML on real tokens), captured-fixture rules, throwaway-route hygiene, live animation delivery, and why mock code is exempt from code-quality gates (minimum code never means minimum design).
 
-Every option designs its own states and ships the mock toolbar, with motion set by the prominence map: **read `references/states-and-chrome.md`** before building the first option.
+Every option designs its own states and ships the mock toolbar, with motion set by the prominence map: **read `references/states-and-chrome.md`** before building the first option. Every option is designed and shown at every screen-size preset, from phone to wide desktop.
 
 ## Step 4: Every mock carries runnable checks, not claimed ones
 

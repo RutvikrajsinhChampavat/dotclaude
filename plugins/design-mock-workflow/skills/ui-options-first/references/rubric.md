@@ -11,7 +11,7 @@ Loaded at Step 2 (pre-build grades) and Step 5 (re-grade) of `ui-options-first`.
 | **Visual craft** | 20 | Layered elevation over borders. 4px spacing rhythm. Concentric radii. Type hierarchy carrying meaning. Restrained colour: status as accent, never fill. Monospace only for data. Step 4 craft checks pass. Creative options land their signature moment. |
 | **Density** | 10 | Compact without crowding. Costs little at rest. No dead space, no cramming. |
 | **Accessibility** | 15 | Measured contrast ≥4.5:1 in both themes. Keyboard reachable. Adequate hit targets. Reduced motion honoured. Never colour alone to convey state. |
-| **Domain fit** | 10 | Behaves correctly in its real container: under zoom/pan for a canvas, resize for a panel, long content for a list. No occlusion, no reflow of neighbours. |
+| **Domain fit** | 10 | Behaves correctly in its real container: under zoom/pan for a canvas, resize for a panel, long content for a list. No occlusion, no reflow of neighbours. Works at every screen-size preset, phone to wide. |
 | **Implementation cost** | 10 | Reuses existing components. Few new surfaces. Performs on realistic data volume. |
 
 **Hard floor: any dimension below 60% of its weight fails the option outright, regardless of
