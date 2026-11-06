@@ -80,7 +80,7 @@ implement with design tokens and delete the mock.
 - `design-mocks/REFERENCES.md`: research notes, reused across tasks. Commit it so teammates share it.
 - `design-mocks/DECISIONS.md`: the taste log, one line per pick. Commit it.
 - `design-mocks/<surface>-spec.md`: the implementation spec for the chosen option.
-- `design-mocks/GRADER-CONTEXT.md`: a one-page project brief (product, users, design system, house rules) the grader reads every run. Written once, commit it.
+- `design-mocks/GRADER-CONTEXT.md`: a one-page project brief (product, users, design system, house rules) the grader reads every run. Written once, kept up to date by the skill.
 - `design-mocks/fixtures/<surface>.json`: redacted captured responses. Git-ignored.
 - `design-mocks/*.html` mock pages and throwaway routes, deleted after the pick. Git-ignored.
 
