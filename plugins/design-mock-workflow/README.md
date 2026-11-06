@@ -11,6 +11,10 @@ graded /100 against a fixed rubric. You pick one, and Claude implements that.
 | `ui-options-first` | Any visual change: colour, layout, component, icon, spacing, animation. Holds the 7-step flow, the rubric, fidelity tiers, runnable checks and fixture rules. |
 | `design-brief-authoring` | The options will come from a tool with no codebase access (Claude Design, a design agent, a contractor). Writes a verified, design-first brief. |
 
+| Agent | Does |
+|---|---|
+| `ui-grader` | The independent grader. A principal product designer persona with the rubric, calibration and output format built in. Dispatched at Step 5; never sees the author's scores. |
+
 | Command | Does |
 |---|---|
 | `/design-mock <what to change>` | Starts the flow on demand. Use it when the skill didn't fire on its own, or to be explicit. Shows as `/design-mock-workflow:design-mock` if another `/design-mock` exists. |
@@ -24,8 +28,8 @@ graded /100 against a fixed rubric. You pick one, and Claude implements that.
 4. Put runnable checks in the mock: contrast in both themes, icon subset, geometry, paint, visibility, motion budget, craft details (concentric radii, tabular numbers, every control state, no layout shift).
    Then a craft pass: screenshot each option, critique it as a design director, fix the top three issues, rewrite the microcopy, and run a task test and a 5-second test. Each sketch names its best-in-class benchmark; each Creative option names its signature moment.
 5. Re-grade the built options, have a fresh subagent grade them independently (the lower grade counts), ship the grading panel inside the mock, and recommend one.
-6. Wait for the pick.
-7. Implement it with tokens and your normal gates, then delete the mock.
+6. Wait for the pick. Feedback comes as pinned notes copied straight out of the mock. The pick and its reason go into a taste log that steers future rounds. A pick like "A's header with C's list" gets a fast remix round of 2 to 3 hybrids.
+7. Extract an implementation spec from the chosen mock, build to it, then screenshot the real build against the mock and fix every difference before deleting the mock.
 
 **Rubric:** UX clarity 20 · Hierarchy fit 15 · Visual craft 20 · Density 10 · Accessibility 15 ·
 Domain fit 10 · Implementation cost 10. Threshold 90. Any dimension under 60% of its weight fails the option
@@ -74,6 +78,9 @@ implement with design tokens and delete the mock.
 ## Files it creates in your repo
 
 - `design-mocks/REFERENCES.md`: research notes, reused across tasks. Commit it so teammates share it.
+- `design-mocks/DECISIONS.md`: the taste log, one line per pick. Commit it.
+- `design-mocks/<surface>-spec.md`: the implementation spec for the chosen option.
+- `design-mocks/GRADER-CONTEXT.md`: a one-page project brief (product, users, design system, house rules) the grader reads every run. Written once, commit it.
 - `design-mocks/fixtures/<surface>.json`: redacted captured responses. Git-ignored.
 - `design-mocks/*.html` mock pages and throwaway routes, deleted after the pick. Git-ignored.
 
