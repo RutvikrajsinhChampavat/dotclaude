@@ -88,8 +88,9 @@ first run. Keep it to one page, in this shape:
 
 One line per rule, no dates or ticket numbers, no incident stories. Delete a rule the user
 reverses. If a rule only applies to one surface, put it in that round's sketch-grades notes,
-not here. Commit the file with the project's other design notes if the repo tracks
-`design-mocks/`; otherwise it lives locally.
+not here. Keep the brief beside the other design notes, under the repo's existing rule for
+`design-mocks/`. If that folder is git-ignored, the brief stays local too; don't change the
+ignore rules to share it.
 
 ### The taste log: `design-mocks/DECISIONS.md`
 
