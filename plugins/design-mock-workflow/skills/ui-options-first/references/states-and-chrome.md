@@ -78,8 +78,12 @@ makes the mock answer "what does this feel like in every situation" without the 
    all pins as a compact list the user pastes into chat; pins persist per option in
    localStorage until cleared. Replaces "screenshot plus describe which dropdown".
 
-**Optional, when the surface calls for it:** persona/role switcher (when frequency differs by
-role), viewport presets (mobile / tablet / desktop frames) and a density toggle, a ⌘K command
+6. **Screen sizes.** A size switcher (`V` cycles presets) plus an **All sizes** view
+   (`Shift+V`) that lays every preset side by side, scaled to fit, for the current option, state
+   and theme. See "Screen sizes" below for the presets and how frames must be built.
+
+**Optional: add when the surface calls for it:** persona/role switcher (when frequency differs
+by role), a density toggle, a ⌘K command
 palette and shortcuts (only on surfaces a power user hits daily).
 
 Toolbar keys must not collide with keys the design itself handles; list them in the toolbar.
@@ -124,3 +128,50 @@ Techniques that earn their place:
 
 Reduced motion: replace movement with opacity or nothing, and keep the state change itself. The
 Step 4 motion check covers both the budget and this path.
+
+## Screen sizes: design for every width, show every width
+
+Responsive behaviour is part of each option's design, decided at the sketch, not patched after
+the desktop build. Each option's sketch says how it adapts; the mock proves it.
+
+**Presets** (CSS px, the frame's real width and height):
+
+| Preset | Size | Stands in for |
+|---|---|---|
+| Phone | 390 × 844 | modern phones, portrait |
+| Tablet | 834 × 1194 | tablets portrait, small split screens |
+| Laptop | 1280 × 800 | the most common work screen |
+| Desktop | 1440 × 900 | the default review size |
+| Wide | 1920 × 1080 | external monitors |
+
+Adjust the set from `GRADER-CONTEXT.md` when the project names its target screens (an internal
+admin tool may drop Phone to a "must not break" check; a consumer app may add a small phone at
+360). A surface that lives inside a container (a settings pane, a side panel, a canvas node)
+also gets frames at that container's real widths, read from the code.
+
+**Frames must reflect the real viewport.** Media queries, `vw`/`vh`, and JS breakpoint hooks
+(MUI `useMediaQuery`, Tailwind `md:`) respond to the *window*, not to a div's width. A 390px
+`div` inside a 1440px window still renders the desktop layout and lies about the phone. So:
+
+- If the app uses viewport media queries or breakpoint hooks, render each frame as an
+  `<iframe>` of the same mock route at the preset's width and height (add `?frame=1` to hide the
+  toolbar inside it), and scale the iframe down with `transform: scale()` to fit the All sizes
+  view. The layout inside is then real.
+- If the surface is built on container queries (`@container`), a sized `div` is enough, and the
+  frames can share one React tree.
+- Never fake a size by shrinking with `zoom` or `transform` alone: the layout stays desktop.
+
+**What each option must get right at each size:**
+- The Step 2b primary is still the first thing seen at every size; tiers can move (a secondary
+  rail becomes a tab on Phone) but the primary never falls below the fold on Phone.
+- No horizontal page scroll at any preset. Only tables, code and diagrams scroll sideways, in
+  their own container.
+- Touch sizes (Phone, Tablet): hit targets at least 44 × 44px, nothing that only works on hover,
+  inputs at least 16px text so phones don't zoom.
+- Wide: content keeps a readable measure (about 65–80 characters for prose) or uses the width
+  for real information. A stretched form across 1920px fails.
+- Long real data (the overflow fixture) at Phone width: names wrap or truncate with the full
+  value reachable, never clipped.
+
+Responsive checks run in Step 4 for every preset; the craft pass and the grader look at the
+sizes too.

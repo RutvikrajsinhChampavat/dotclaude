@@ -45,13 +45,18 @@ Fixtures in the mock, not assertions in prose. A number you assert is not a numb
    - raised surfaces use layered shadows (two or more layers), not one flat shadow or a border alone;
    - no layout shift when loading resolves: record the rects of stable landmarks in the loading
      and populated states; any landmark that moves is a failure.
+9. **Screen sizes.** At every preset, in each option's populated and overflow states: page
+   `scrollWidth` ≤ the frame width (no horizontal scroll); no text element clipped
+   (`scrollWidth > clientWidth` on an element without an ellipsis); touch presets have every
+   interactive element at least 44 × 44px; the Step 2b primary's rect starts above the fold on
+   Phone. Failures listed per preset in the grading panel.
 
 ## Step 4b: Craft pass. Look, critique, fix
 
 A mock nobody has looked at is not finished. Before grading:
 
 1. **Look.** Screenshot every option in the populated state and its weakest state, in both
-   themes. Screenshots only: no click loops, no logging in. If your rules forbid driving a
+   themes, at Desktop; then the populated state at Phone and Wide (one theme is enough there). Screenshots only: no click loops, no logging in. If your rules forbid driving a
    browser, or the route sits behind a login, use the runtime smoke render instead and say the
    craft pass ran blind.
 2. **Critique as a design director.** Review each screenshot as "what would the design lead at
