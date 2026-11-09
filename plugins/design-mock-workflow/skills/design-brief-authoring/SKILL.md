@@ -99,6 +99,8 @@ options reach your human partner. The ban is only on text leaving this session.
 - Sample rows typed or edited by hand
 - A status or reason in the brief that the producer does not define
 - An example thesis in the directions ask, or earlier rounds' directions left unnamed
+- Widths that stop at 1440, or nothing said about what 1920 and wider should hold
+- An animation in the brief with no job named beside it
 
 ## Common mistakes
 

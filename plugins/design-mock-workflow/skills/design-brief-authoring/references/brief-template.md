@@ -33,7 +33,14 @@ comes back works in both places.
 
 **REQUIRED: the screen widths.** Every width the surface must work at, the one it is judged at,
 and what happens below the smallest. Take them from `GRADER-CONTEXT.md`'s Screens section when it
-exists. A brief with no widths gets designs at one width.
+exists. Otherwise list Phone 390, Tablet 834, Laptop 1280, Desktop 1440, Wide 1920 and Ultra-wide
+2560, and drop only the ones the product does not support. A brief with no widths gets designs at
+one width; a brief that stops at 1440 gets layouts that stretch on a monitor.
+
+**REQUIRED: what the extra width is for.** At 1920 and above, say what the space holds: a readable
+measure for text (about 65 to 80 characters a line), more real information side by side, or a
+deliberate margin. A form or table stretched edge to edge does not meet the brief. A surface of
+fixed width (a side panel, a dialog) says so, and the widths apply to the page around it.
 
 ## 4. The starting point
 
@@ -145,6 +152,21 @@ to extend one of them, name that one as the base instead.
 Durations for state changes and for reveals, easing, what must never animate, and
 `prefers-reduced-motion` — under which state still has to read from colour, shape and position
 alone.
+
+**REQUIRED: the job of every animation.** Each one does one of four jobs, named beside it:
+continuity (where something came from or went), feedback (a press, a success, a failure),
+attention (look here, now), or data change (a value moved, a list reordered). An animation with no
+job is cut; decoration is not a job. What people read or scan, such as text, tables and list rows
+at rest, stays still.
+
+**The budget.** Repeated actions (select a row, switch a tab, toggle) take 150ms or less, or
+nothing. Press and hover 120 to 180ms, panels and popovers 200 to 300ms, a whole surface 300 to
+400ms, nothing over 500ms except a one-time moment. Enter eases out, exit eases in and runs about
+a fifth shorter. A project with its own motion tokens states those instead.
+
+**One signature moment per bold direction:** the interaction someone would describe to a colleague
+afterwards, such as a path that lights stage by stage as the mode changes. A direction with none is
+a safe direction; label it so.
 
 Require the motion to be built, not described: every prototype ships working transitions, with
 hover and press on every control and enter, exit, expand and collapse for anything it reveals,

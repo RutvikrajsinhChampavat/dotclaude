@@ -37,6 +37,12 @@ const TOKENS = /\btokens?\b/i;
 const THEME_COLUMN = /\b(light|dark|high contrast)\b/i;
 const SINGLE_THEME = /\b(one theme|single theme|light only|dark only|no dark theme)\b/i;
 const SCREEN_WIDTH = /\b\d{3,4}\s*(px)?\s*(wide|width)\b|\bscreen sizes?\b|\bviewport\b/i;
+const WIDTH_CONTEXT = /\b(wide|width|screen|viewport|monitor)\b|×/i;
+const PIXEL_NUMBER = /\b(\d{3,4})\b/g;
+const WIDE_MIN = 1920;
+const WIDE_MAX = 3840;
+const MOTION_HEADING = /\bmotion\b/i;
+const REDUCED_MOTION = /reduced[- ]motion/i;
 const NEEDS_API = /needs API/i;
 const ABSENT_DATA = /\b(does not|doesn't|do not|don't|cannot|can't) (have|show|know|carry)\b/i;
 
@@ -87,6 +93,23 @@ function tokenThemes(lines, heads, text) {
   return [{ line: section.line, id: "token-themes", message: "token table lacks a column per theme" }];
 }
 
+function wideScreen(lines) {
+  const widths = lines
+    .filter((line) => WIDTH_CONTEXT.test(line))
+    .flatMap((line) => [...line.matchAll(PIXEL_NUMBER)].map((match) => Number(match[1])));
+  if (widths.some((w) => w >= WIDE_MIN && w <= WIDE_MAX)) return [];
+
+  return [{ line: 1, id: "wide-screen", message: `no width of ${WIDE_MIN}px or more; wide layouts come back stretched` }];
+}
+
+function motionSection(heads, text) {
+  const section = heads.find((h) => MOTION_HEADING.test(h.title));
+  if (!section) return [{ line: 1, id: "motion", message: "no motion section; prototypes come back without transitions" }];
+
+  if (REDUCED_MOTION.test(text)) return [];
+  return [{ line: section.line, id: "motion", message: "motion section never states the reduced-motion version" }];
+}
+
 function requiredPresence(text) {
   const required = [
     { id: "screens", pattern: SCREEN_WIDTH, message: "no screen widths named; designs come back at one width" },
@@ -103,6 +126,8 @@ function lint(text) {
     ...lineFindings(lines),
     ...designBarFirst(heads),
     ...tokenThemes(lines, heads, text),
+    ...wideScreen(lines),
+    ...motionSection(heads, text),
     ...requiredPresence(text),
   ].sort((a, b) => a.line - b.line);
 }
