@@ -31,6 +31,10 @@ Bulleted: design this, also design that, out of scope. Then the fixed constraint
 anchors or containers that cannot move. Name any element that repeats elsewhere, so the model that
 comes back works in both places.
 
+**REQUIRED: the screen widths.** Every width the surface must work at, the one it is judged at,
+and what happens below the smallest. Take them from `GRADER-CONTEXT.md`'s Screens section when it
+exists. A brief with no widths gets designs at one width.
+
 ## 4. The starting point
 
 Two shapes, depending on whether the thing exists.
@@ -57,6 +61,10 @@ text, cost, display names, per-status counts, grouped filters — name the absen
 
 **REQUIRED: the refresh behaviour.** Whether anything updates on its own, and what triggers a
 refetch.
+
+**REQUIRED: every closed set, verbatim.** Statuses, reason codes, types, as the producer defines
+them, each with its meaning in the user's words. The designer will name states; this is the list
+they may name. A state outside it is labelled **needs API**.
 
 Close with: anything needing data beyond this is allowed, but label it **needs API** and name the
 field, so the cost is visible at decision time. Its sibling label, for build cost rather than data
@@ -117,17 +125,31 @@ taken and from where. Where the project has a fixed palette and type, forbid tak
 hover, focus, open it, bind it, undo it, trigger the error, toggle the theme. Static frames only
 for what interaction cannot reach.
 
+Every artboard at every width in §3.
+
 **REQUIRED: what the sample data must span.** Sample data that dodges the problem hides it. If the
-problem is dates, the data spans days and weeks. If it is overflow, something overflows.
+problem is dates, the data spans days and weeks. If it is overflow, something overflows. The rows
+themselves come from a script over real data (discovery step 4c), with the seed's quirks replaced
+by the product's defaults.
 
 Close by asking for two or three structurally different directions, a one-sentence thesis for each,
-and a recommendation in prose. Spacing variants of one layout are one direction.
+and a recommendation in prose. Spacing variants of one layout are one direction. Give no example
+thesis: the tool treats an example as the answer.
+
+**When earlier rounds explored this surface** (`DECISIONS.md` lists them): name each tried
+direction in one line, as already explored, and ask for new ground. When your human partner asked
+to extend one of them, name that one as the base instead.
 
 ## 11. Motion
 
 Durations for state changes and for reveals, easing, what must never animate, and
 `prefers-reduced-motion` — under which state still has to read from colour, shape and position
 alone.
+
+Require the motion to be built, not described: every prototype ships working transitions, with
+hover and press on every control and enter, exit, expand and collapse for anything it reveals,
+plus a reduced-motion version. A prototype whose surfaces pop in and out with no transition, or
+motion only named in a caption, does not meet the brief.
 
 ## 12. Before you start
 

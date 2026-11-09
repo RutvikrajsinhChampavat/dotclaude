@@ -24,7 +24,7 @@ rg -l "tailwind|styled-components|\.scss|createTheme|ThemeData|SwiftUI|@Composab
 |---|---|
 | Redesigning a surface that ships | all of them |
 | Extending a surface that ships | all of them; scope the problem list to the part being changed |
-| A feature with no UI yet | 2, 3, 4b, 5, 6 — and step 4 becomes "what will the API give us", answered from the endpoint or the spec, or marked as undecided |
+| A feature with no UI yet | 2, 3, 4b, 4c, 5, 6 — and step 4 becomes "what will the API give us", answered from the endpoint or the spec, or marked as undecided |
 
 For something new there is no "what is there now", so the brief's §4 carries the job to be done
 and the surrounding surfaces it has to sit beside instead.
@@ -36,6 +36,19 @@ what is absent rather than assuming the shape of the last project you worked in.
 ```bash
 fd -i -d 3 "design|tokens|style.?guide|storybook|REFERENCES" -e md -e mdx 2>/dev/null | head
 ```
+
+**Reuse what the options-first workflow already recorded.** A project that has run
+`ui-options-first` keeps a `design-mocks/` folder. Read it before running anything below:
+
+| File | Answers | Re-check |
+|---|---|---|
+| `PLATFORM-KIT.md` | steps 2, 3, 4b and 5: colour and type by role, variants, layout, traps | when the surface changed after the kit was written |
+| `GRADER-CONTEXT.md` | product, audience, house rules, screen widths | nothing; it holds your human partner's own rulings |
+| `DECISIONS.md` | which directions earlier rounds tried for this surface, and why one won | nothing |
+| `REFERENCES*.md` | step 6 | entries marked inferred |
+
+A reused row cites the file and section as its provenance. To tell whether the kit is stale, compare
+its date with the last commit touching the surface (`git log -1 --format=%cs -- <surface-files>`).
 
 ## 1. The real surface
 
@@ -121,6 +134,12 @@ brief states plainly so the designer knows the shape is still open.
 Answer explicitly:
 - Every field one row, card or item carries.
 - Every field it does NOT have, and where that data lives instead — another call, or nowhere.
+- Every closed set the surface reads (statuses, reason or error codes, types, roles), listed
+  verbatim from where it is DEFINED. That is usually the producer: the consumer's type often says
+  `string`. A state that is not in the set is not a state the surface can show. "Sign-in expired"
+  is a needs API row when the producer only sends `download_failed` with a 401 in the error text.
+- What the producer knows that the response drops. That is the cheapest needs API there is, and
+  the designer cannot find it from outside.
 - Does it refresh on its own, and what triggers a refetch? Nothing that polls does not tick,
   however much a live row would flatter the design.
 - Can a filter take more than one value? Are there per-status counts? Grouped filters and count
@@ -165,10 +184,29 @@ rg -n "styleOverrides|variants:|filled[A-Z]|outlined[A-Z]" <theme-dir>
 rg -ln "<ComponentName" src/
 ```
 
+## 4c. Sample data
+
+Sample rows are facts too. The designer copies them onto every artboard, so a wrong one becomes
+the story every direction tells. Build them with a command, never by hand.
+
+- **Source**, in this order: a captured response, a fixture, a seeded database. Generate the sample
+  block with a script over it and keep the command in the fact table. Rows assembled by eye drift:
+  a failure count lands on the wrong source, and nothing catches it.
+- **Pick rows by filtering in the script**, so they span the problem (brief §10). Editing the
+  script's output by hand undoes the point.
+- **Seed quirks are not product behaviour.** A schedule, count or timestamp that exists only
+  because of how the seed was written is replaced with the product's real default, and the fact
+  table row says which value is which.
+- **Scrub what leaves.** The brief goes to an outside tool. Swap real names, emails, tenant ids and
+  file names for plausible fakes inside the script, then let `scripts/check-brief.mjs` confirm.
+- **No fixture yet** (a feature with no API): invent the rows, and label the block illustrative
+  so nobody reads it as the API's shape.
+
 ## 5. Type and iconography
 
-Name the families, weights and sizes the product actually ships, and the icon set the design must
-stay inside.
+List every family, weight and size step the product ships, read from where the scale is defined.
+The whole scale, not the steps this screen happens to use: a designer handed four of nine steps
+designs with four. Then the icon set the design must stay inside.
 
 *Example, Next.js:*
 ```bash
@@ -193,6 +231,10 @@ such a file, rather than creating one uninvited in someone's repo.
 
 Either way, each comparable in the brief needs the specific mechanism to study, not a product
 name. "Study Linear" gives nothing.
+
+**Directions already explored.** If `DECISIONS.md` lists earlier rounds for this surface, note each
+direction's one-line thesis. The brief names them as tried (template §10), so the tool spends its
+two or three directions on new ground.
 
 **Write new findings back** where the project keeps them, before writing the brief — otherwise the
 next brief pays for the same research. If nothing blocks it, do it; if something does, say so in

@@ -1,9 +1,15 @@
 {
   "name": "design-mock-workflow",
-  "version": "0.2.5",
+  "version": "0.3.0",
   "description": "Options-first UI workflow: grade distinct, interactive design options /100 on real components and real data before any UI code changes, and brief external design tools.",
   "author": {
     "name": "Rutvikraj Champavat"
   },
-  "keywords": ["design", "ui", "mocks", "options-first", "design-review"]
+  "keywords": [
+    "design",
+    "ui",
+    "mocks",
+    "options-first",
+    "design-review"
+  ]
 }

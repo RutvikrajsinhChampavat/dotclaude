@@ -55,6 +55,18 @@ Every error message answers: what happened, whether anything was lost, what to d
 A floating, collapsible toolbar outside the stage (never inside the design being judged). It
 makes the mock answer "what does this feel like in every situation" without the user asking.
 
+**Start from the kit; don't rebuild the chrome.** On a React stack, copy
+`assets/mock-harness/MockHarness.jsx` from this skill into the mock route folder (the app can't
+import from the skill directory) and wrap the page in it. It ships items 1 to 6 below plus blur
+and greyscale filters (`B`, `M`), a reduced-motion switch (`R`), the grades panel (`G`), the
+contrast and size checks, and the `window.__mock` handshake the capture script relies on. The
+mock's own code is then the options and their states, nothing else. Mark sections in the option
+code so the overlays work: `data-tier` + `data-axes` (tiers overlay), `data-why` (rationale
+pins), `data-page` on the page root (width checks). The kit's chrome uses plain elements and
+inline styles on purpose: it sits outside the design and must not borrow its look. Usage is in
+the file header. On another stack, build the same toolbar and the same `window.__mock`
+contract (`meta`, `set`, `current`, `filter`).
+
 **Default, every mock, first build:**
 
 1. **State switcher.** Empty · loading · populated · error · overflow · first-run, each driven
@@ -143,6 +155,8 @@ the desktop build. Each option's sketch says how it adapts; the mock proves it.
 | Laptop | 1280 × 800 | the most common work screen |
 | Desktop | 1440 × 900 | the default review size |
 | Wide | 1920 × 1080 | external monitors |
+| Ultra-wide | 2560 × 1440 | QHD and ultra-wide monitors |
+| Your screen | reported | the user's own window, reported by the mock to the dev server; appears once a browser other than the pane has opened the mock |
 
 Adjust the set from `GRADER-CONTEXT.md` when the project names its target screens (an internal
 admin tool may drop Phone to a "must not break" check; a consumer app may add a small phone at
@@ -173,5 +187,5 @@ also gets frames at that container's real widths, read from the code.
 - Long real data (the overflow fixture) at Phone width: names wrap or truncate with the full
   value reachable, never clipped.
 
-Responsive checks run in Step 4 for every preset; the craft pass and the grader look at the
+Responsive checks run in Step 4 for every preset; the craft loop and the graders look at the
 sizes too.
