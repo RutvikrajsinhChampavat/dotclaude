@@ -33,6 +33,10 @@ invented arbitrary value silently no-ops.
 Whatever the tier: inline assets (tokens, icon fonts as base64) so the artifact is portable and
 opens without a build.
 
+**Tier 1 mocks start from the harness kit** (`assets/mock-harness/MockHarness.jsx`, see "Mock
+chrome"): heroes and finalists alike, so the capture script can drive every option from the first
+build. Heroes use it with one state; finalists add the rest.
+
 **Feed it REAL data, never invented fixtures.** Capture an actual API response or DB row for the
 shape the mock renders. Field names, nesting depth, null-ness, array length, value length and
 optionality are all *design* constraints, and a made-up object gets each of them wrong in a way
@@ -41,6 +45,65 @@ arrives 40 chars long, and is sometimes null. See "Captured data fixtures" below
 
 Mock code is throwaway and exempt from code-quality ceremony (see "Mock code is exempt"). Write
 it fast and loose; spend the effort on the design.
+
+## Platform kit: learn the platform once, hand it to every agent
+
+Two failures share one cause. Mocks that look invented (a token used in a role the product never
+gives it, a radius nobody else uses) and mocks that don't sit in the product (a different page
+shell, different surfaces) both come from agents re-deriving the platform each round and filling
+the gaps with taste. It is also slow: in one measured round, half to four-fifths of every
+builder's tool calls were shell reads of the same theme, token and typography files. Write
+`design-mocks/PLATFORM-KIT.md` once per project, at most two pages. The art director, every
+builder and every grader read it.
+
+1. **Layout.** Capture 2 to 3 live pages at Desktop into `design-mocks/refs/platform/` (signed-in
+   pages through the running capture browser) and read the computed styles of their landmarks:
+   the page shell (title component and size, where page actions sit and which button variant they
+   use, content padding, max width), section spacing, the surface recipe (background, border,
+   radius, shadow), the list-row recipe (height, divider, hover), how status is shown (chip, dot,
+   icon or text), the empty state. Numbers, not adjectives.
+2. **Usage census.** Run `node <skill>/scripts/class-census.mjs census --src <source dir> --exclude
+   <mock routes> --out design-mocks/class-census.json` and paste its per-family table and its
+   component table (each component's variant/colour combos with count and share; MUI components
+   out of the box, extend `MUI_DEFAULT_PROPS` in the script for another library). Under them,
+   name the role of each top class: page surface, card surface, title text, body text, secondary
+   text, divider, focus ring.
+3. **Colour by role.** The token per role, with the text/surface pairs that pass 4.5:1 in each
+   theme. Status colours name where the product uses them (an icon, a chip, a line of text) and
+   where it doesn't.
+4. **Type.** Each typography component, its rendered size at Desktop, and the role it plays on the
+   live pages.
+5. **Controls.** The button and chip variant for each role (page action, row action, secondary),
+   read off the live pages and the census component table: the product's majority combo for the
+   role is the default, written with its count. Measure its label contrast in both themes. When
+   the shipped default fails, it stays the default and the ratio goes under Traps as an inherited
+   failure, to raise as a platform follow-up. A rarely used variant that passes may be listed as an
+   alternative with its count, never as the rule.
+6. **Copy.** The product's existing labels for statuses and actions, and where they live in code.
+   The same concept keeps the same word.
+7. **Data, harness, example.** Fixture helper signatures; the `options` entry shape and the
+   `data-tier` / `data-axes` / `data-why` / `play` contract; the path of one finished option file.
+8. **Traps.** One line per trap measured in this product (a wrapper whose line height equals its
+   font size clips descenders under `overflow:hidden`; a token equal to the surface it sits on).
+9. **Allowed extras.** Colours, radii and fonts that live pages render but the mock page's own
+   shell doesn't show (a component library default, say). They go into the harness `allow` prop.
+
+**Shipped beats passing.** Every kit default is what the product uses most, counted: the census
+tables, or a code search with the count written beside it. When the shipped pattern fails a check
+(contrast on the product's own primary button, colour restraint against full-colour brand logos),
+the failure is the platform's. Report it as a follow-up and let graders flag it, not fail it. Never
+fix it inside one mock by swapping in a variant the product rarely uses: that page then looks like
+a different product, and the user's first question will be why it doesn't follow the platform.
+
+Head the file with the git hash (or mtime) of the theme and token files and the census date;
+refresh the kit when they change. Builders Read the kit first and open source only for what it
+doesn't cover, listing those lookups in their hand-back; add them to the kit yourself (parallel
+builders appending to one file lose each other's lines).
+
+**Text never clips.** Truncation is for user content of unknown length only (a file name, a
+title someone typed), with the full text reachable on hover or focus; never on headings, buttons,
+labels or numbers. The harness reports any text cut by its own box or a clipping ancestor, so a
+label that fits by a pixel fails before anyone sees it.
 
 ## Mock code is exempt from code-quality ceremony
 
@@ -152,3 +215,90 @@ Embedded previews and screenshots can freeze animation (some IDE preview panes p
 `requestAnimationFrame` while hidden). Verify the animation is WIRED (keyframes present, computed
 `animationName` / `animationDuration` on the element), give the user the served URL to watch it,
 and say "animation wired; confirm motion at the URL" rather than claiming it animates.
+
+Heroes are captured as still frames but never built static. Every transition the default above
+asks for ships in the hero's one Write: hover and press on every control, enter, exit, expand and
+collapse for anything it reveals, each 500 ms or less, reduced motion honoured. A Creative hero's
+signature moment is its one play. Ambient loops and per-state choreography arrive with the
+finalist build.
+
+
+## Builder contract: the whole prompt for a hero or finalist builder
+
+Builders are fast when the prompt holds everything and the steps are fixed: a contract builder
+took 16 turns and 6.7 min for a hero, where open-ended builders took 47 to 79 turns and 18 to 28
+min, mostly re-reading theme and token files (measured 2026-11-06/07; six contract builders in
+parallel then took 3.7 to 4.9 min each). Fill the `<...>` slots and send the template as the
+entire prompt.
+
+**Before dispatch, scaffold the route yourself.** Parallel builders must never share a file, and
+the route must compile before any of them lands. Copy the harness; write `page.tsx` registering
+every option and state, with each Creative option's `play` imported from its own file
+(`import C1, { play as c1Play } from "./c1"`, then `play: (p) => c1Play(p)`); and write one stub
+per option at `<route>/<id>.tsx`: the import block every option needs (fixture, typography
+wrappers, page header), `export const play = async () => {};`, and a default export that renders
+the page header from the fixture. Without the stubs, `page.tsx` imports files that don't exist yet
+and the route fails to compile under every early capture. Each stub is also its builder's pattern
+file. For finalists the route exists: register the new states in `page.tsx` before dispatch.
+
+**Hero builder.**
+
+```
+You build ONE hero frame: option <ID> (<name>, <track>) of the <surface> round. Budget: 10 minutes
+wall clock. Run `date +%s` now and before each step; at 10 minutes, run step 4 with what you have.
+
+Design mock (throwaway code): no types, tests, lint or tsc. Root: <repo root>. Open only these:
+- design-mocks/GRADER-CONTEXT.md: the rules you are graded against; every "Assume ..." line binds you.
+- design-mocks/PLATFORM-KIT.md: kit values and traps beat everything, checks and grades included (touch floors are px when the root font is fluid).
+- Platform first: when a check fails on something the kit says the product ships (its button variant, colour role, logo treatment), keep it and hand it back as inherited. Never change a platform element to pass a check.
+- Your sketch and art direction: "### <ID>" in design-mocks/<surface>-art-direction.md.
+- Your stub, <route>/<id>.tsx: its imports, fixture call and page header are your pattern.
+
+1. Replace <route>/<id>.tsx in ONE Write: the populated state, Desktop, the product's default
+   theme, the art direction in full, and its transitions: hover and press on every control,
+   enter, exit, expand and collapse for anything it reveals, every tween 500 ms or less, reduced
+   motion honoured. Keep `export const play` (page.tsx imports it). Creative: the signature
+   moment goes in that `play`.
+2. Run: <CHECK>
+3. Read the populated PNG beside design-mocks/refs/<surface>/<borrowed ref> and
+   design-mocks/refs/platform/<page>. Fix the top three look gaps and every failed check your option
+   introduced in ONE pass; inherited platform failures stay.
+4. Run <CHECK> again. Hand back the failed checks left, one line per fix, and both `date +%s`.
+
+Never: write your own probe or capture scripts; run lint, tsc or tests; open theme or token source
+the kit already summarises; edit any file but yours; run `capture.mjs signin`. Capture exit 2 means
+a sign-in is needed: stop and say so.
+```
+
+**Finalist builder.** The same header, inputs and "Never" list, a 12-minute budget, and these
+steps:
+
+```
+Grader fixes to apply: <the hero graders' top fixes>.
+1. In ONE edit pass on <id>.tsx: the fixes; the designed states <states> in the option's own visual
+   language; every size preset; motion per the direction, every tween 500 ms or less, reduced
+   motion honoured. Keep the signature moment and its data attributes working.
+2. Run: <MATRIX>; <SHEET>
+3. LOOK PASS, never skipped: Read states.png, sizes.png and the full-size populated frame beside
+   the borrowed reference. Fix the top three look gaps and every failed check your option
+   introduced in ONE pass; inherited platform failures stay.
+4. Run step 2 again. Hand back the failed checks left (by frame), one line per fix, both `date +%s`.
+```
+
+**The commands.** `$C` is `<skill>/scripts/capture.mjs`, `$O` the option's shots folder, `$F` its
+file.
+
+- `<CHECK>`: `node $C mock --url <mock url> --options <ID> --states populated --sizes 1440x900
+  --filters none,blur,grey --checks --out $O && node <skill>/scripts/class-census.mjs check
+  --census design-mocks/class-census.json "$F"; grep -nE
+  "duration:[[:space:]]*(0?\.(5[1-9]|[6-9])|[1-9])" "$F" || echo "motion: no tween over 500 ms";
+  grep -qE "transition|<motion\.|animate=|@keyframes" "$F" || echo "motion: FAIL, no transitions wired"`
+  (the last line proves only that some motion exists; coverage is the look pass's job)
+- `<MATRIX>`: `node $C mock --url <mock url> --options <ID> --states <states> --themes light,dark
+  --sizes 390x844,834x1194,1280x800,1440x900,1920x1080,2560x1440 --filters none,grey,blur --checks
+  --out $O`, then the census and motion lines from `<CHECK>`.
+- `<SHEET>`: `node $C sheet --out $O --themes light --sizes 1440x900 --cols 3 --to $O/states.png;
+  node $C sheet --out $O --states populated,<weakest> --cols 4 --to $O/sizes.png`
+
+Every unfiltered frame in `$O/manifest.json` carries `checks`, its failed check lines (`[]` means
+all passed).

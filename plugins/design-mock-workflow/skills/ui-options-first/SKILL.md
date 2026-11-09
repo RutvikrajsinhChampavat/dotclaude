@@ -16,16 +16,30 @@ tables, or whose options are one component repositioned N ways, is a failure how
 its annotations are. It gives no signal about how the thing will feel, so choosing from it is
 choosing blind.
 
+**Platform match comes first, checks second.** Every option matches the platform before it
+satisfies any check, grade or rubric line: the product's own components and variants, colours,
+logo treatment, type, spacing and page shell, as the product ships them. When a check fails on
+something that matches the platform, the platform stays and the failure goes to the user as a
+platform follow-up. Never drop platform match to pass a check, raise a score or clear 90. An
+option that does fails Fidelity, whatever its total.
+
 **Reference files: load each at the step that names it, not up front:**
 
 | File | Holds | Load at |
 |---|---|---|
 | `references/research-and-brief.md` | REFERENCES.md shape, GRADER-CONTEXT.md template and update rules, DECISIONS.md taste log | Step 0, Step 6 |
-| `references/rubric.md` | The /100 rubric, hard floors | Step 2, Step 5 |
-| `references/build.md` | Fidelity tiers, captured data fixtures, route hygiene, live animations, mock-code exemption | Step 3 |
+| `references/art-direction.md` | Reference board, measured spec, per-option art direction | Step 1b, Step 4b, Step 5 |
+| `references/rubric.md` | Gates, the /100 rubric, hard floors, what each stage scores, median of three graders | Step 2, Step 5 |
+| `references/build.md` | Platform kit (layout, usage census, colour and type by role, traps), fidelity tiers, captured data fixtures, route hygiene, live animations, mock-code exemption | Step 1b, Step 3 |
 | `references/states-and-chrome.md` | Designed states, mock toolbar (incl. feedback pins), motion budget, screen sizes | Step 3 |
-| `references/checks-and-craft.md` | Runnable checks, craft pass | Steps 4, 4b |
+| `references/checks-and-craft.md` | Runnable checks, capture, the comparative craft loop | Steps 4, 4b |
 | `references/handoff.md` | Implementation spec and fidelity check | Step 7 |
+
+Bundled: `assets/mock-harness/MockHarness.jsx` (the mock toolbar, frames, overlays and checks
+for a React route; copy it into the mock route), `scripts/capture.mjs` (reference and mock
+screenshots to PNG files, which the graders read; needs Node 22+ and Chrome, Edge or Chromium)
+and `scripts/class-census.mjs` (how often the product uses each styling class and each component
+variant/colour combo, and which mock classes and combos it never or rarely uses).
 
 A cross-reference by section title ("States are designed", "Mock chrome", "Motion budget",
 "Captured data fixtures", "Mock code is exempt") lives in the file above that holds it.
@@ -36,6 +50,17 @@ A cross-reference by section title ("States are designed", "Mock chrome", "Motio
 - Generating options for someone to pick from: UI variants, banners, brand assets, slides, design directions.
 - A plan that includes a visual change, and implementing the option that was picked.
 - Skip only for genuinely non-visual work.
+
+## Pick the mode first
+
+| Mode | When | What changes |
+|---|---|---|
+| **Quick** | The change stays inside one component or is a tweak: spacing, copy, colour, an icon, one control | 2 to 3 options of any track. Reuse the existing reference board (none yet: 2 to 3 screenshots of the current screen plus 1 to 2 references). Art direction of 5 lines or fewer per option. No hero stage: build each option straight to the states the change touches. One grader, one craft round. |
+| **Full** | A new surface, a page or section redesign, a new interaction pattern | Every step below. |
+
+Both modes keep the gates: options genuinely distinct, real components and captured data,
+sketches graded before building, every option graded /100 against threshold 90 before the user
+sees it. Say which mode and why in one line before Step 0; the user can switch it.
 
 ---
 
@@ -56,9 +81,46 @@ If installed: `ui-ux-pro-max` first (option generation; route to its asset submo
 `ui-styling` is shadcn/Radix-oriented. On a non-shadcn project (MUI, Chakra, native), take its
 accessibility and spacing discipline and skip its component/token patterns.
 
+On a project with its own design system, take from `ui-ux-pro-max` its UX guidelines, motion
+presets, chart types and style vocabulary (words for the bold move in Step 1b). Skip its palettes
+and font pairings: colour and type come from the project's tokens.
+
 If either skill is not installed, say so in one line and continue with this skill's rubric and
 checks alone. If a domain search returns 0 results, say so and name what you fell back on.
 Never present an empty search as data.
+
+## Step 1b: Art direction. Decide the look from pictures, in numbers
+
+**Read `references/art-direction.md` now.** Build the reference board
+(`design-mocks/refs/<surface>/`, 6 to 10 images captured with `scripts/capture.mjs refs` or
+dropped in by the user), Read every image, and extract the measured spec. Each direction
+sketched in Step 2 then carries an art direction block: type voice, composition and focal point,
+colour ratio, surfaces, rhythm, motion signature, one bold move, and the reference file it
+borrows from. All of it goes in `design-mocks/<surface>-art-direction.md`. Without a board, ask
+the user for screenshots; never design the look from product names alone.
+
+**Platform first.** The mock must look like it already ships in this product. Before the art
+director starts, make sure `design-mocks/PLATFORM-KIT.md` exists and is current ("Platform kit" in
+`references/build.md`): the product's own page layout, the classes it actually uses and how often,
+colour and type by role, its copy, its traps. One agent writes it in parallel with the board when
+it's missing; every later round reuses it. Kit values beat reference values: references supply
+composition and finish ideas, never a radius, colour, type size or page shell the product already
+defines. A deviation is allowed only as an option's named bold move, built from existing tokens.
+What the product ships most is the default, even when it fails a check: a contrast failure on the
+product's own primary button, or brand logos that cost colour-restraint points, go to the user as
+a platform follow-up (see "Platform match comes first" above). Never route around them with a
+variant the product rarely uses.
+
+**Reuse before you capture.** An existing board and spec for this surface (or one in the same
+domain) is reused as is; capture only what is missing. `design-mocks/refs/SOURCES.md` lists which
+sources capture cleanly and which hit cookie walls or tours, so nobody retries a known failure. A
+subagent that only captures may run on a cheaper model; art direction, builders and graders stay
+on the strongest one.
+
+**Who writes the directions.** On a surface whose board, spec and kit already exist, write each
+option's direction block yourself, beside its Step 2 sketch, in ONE Write of the art-direction
+file, then dispatch the builders at once. An art-director agent runs only when the board or spec
+has to be built (the first round on a surface), and that setup sits outside the 20-minute round.
 
 ## Step 2: Paper-sketch every direction, then GRADE BEFORE BUILDING
 
@@ -75,17 +137,22 @@ line on its loading, empty and error treatment (see "States are designed", `refe
   to someone else ("the path lights stage by stage as the mode changes"). No signature moment
   means it is not a Creative option yet.
 
-Score them all against the rubric (`references/rubric.md`) **while they are still prose**.
+- **Art direction.** The Step 1b block for this direction. Two directions with the same block
+  are one direction.
 
-- Cut or rework anything under 90 now. Building a fully interactive option and then finding it
-  scores 62 is pure waste.
+Score them all against the rubric (`references/rubric.md`) **while they are still prose**. Prose
+can't show the look, so a sketch is scored on the five non-visual dimensions (60 points);
+Aesthetic quality and Point of view read "pending".
+
+- Cut or rework any sketch under 54 of 60 now. Building an option and then finding its structure
+  fails is pure waste.
 - Directions must be genuinely different *approaches*. Ten shades of one idea is one option.
 - Keep the survivor count honest: six strong directions beat twelve where four are filler.
 
 ### The option set: at least 3 Simple and 3 Creative
 
-Every round delivers two tracks, at least three built options each, labelled on the option tab
-and in the grading panel:
+Every round builds two tracks, at least three hero frames each (Step 3a), labelled on the option
+tab and in the grading panel:
 
 - **Simple.** The conventional answer done very well. Existing components and patterns, few new
   parts, low implementation cost, shippable this sprint. Users already know how it works.
@@ -98,16 +165,17 @@ Rules:
   option. Same for Creative.
 - **Creative is not Simple plus animation.** If you can turn the motion off and get one of the
   Simple options back, it belongs in Simple. A Creative option changes structure or interaction.
-- **Both tracks clear 90.** Creative options will score lower on Implementation cost, so they
-  have to earn it back on UX clarity, Hierarchy fit and Visual craft. A track short of three
-  survivors gets reworked or replaced inside that track. Never backfill one track from the other.
-- **Sketch more than you build.** Paper-sketch 4 to 5 per track in this step and build the best 3.
+- **Finalists in both tracks aim for 90**, with one fix loop to get there (Step 4b). A track short of three sketches at 54 or more gets
+  reworked or replaced inside that track. Never backfill one track from the other.
+- **Sketch only what you'll build.** Three per track (quick mode: the 2 to 3 options), each sketch
+  at most six lines plus its art direction block. Replace a sketch only when it scores under 54.
 - **User-named families still count.** Tag each named family Simple or Creative, then top up
   each track to three.
 - **The user's count wins.** If they ask for a specific number ("just two options"), deliver
   that and say which track each one is.
 
-Step 6 recommends one overall and names the best of the other track as the alternative.
+The user picks the finalists from the heroes (Step 3a). Step 6 recommends one finalist overall
+and names the best of the other track as the alternative.
 
 **Cover every family the user named. Research informs HOW, never WHETHER.** If the ask is
 "show me three approaches: in the node, in a panel, in a card", deliver all three, even when the
@@ -123,7 +191,7 @@ user can see beats a missing option they were promised.
 Self-check before delivering: if the user asked for N families and most options collapse into
 one of them, you have not delivered N families.
 
-Record the pre-build scores. Re-score after building (Step 5) and report both. The delta is the
+Record the sketch scores. Re-score after building (Step 5) and report both. The delta is the
 useful signal about what the build revealed.
 
 ## Step 2b: Prominence map. Decide how loud each section is before styling it
@@ -167,44 +235,135 @@ chrome") and in the grading panel, so the user challenges the ranking while look
 Two options that rank sections differently ARE genuinely distinct directions: a valid family to
 offer, not a variant of one.
 
-## Step 3: Build the mock. Fidelity tiers, highest available wins
+## Step 3: Build. Wide and cheap first, then deep
 
-Build at the highest fidelity available, on REAL captured data. **Read `references/build.md` now**: fidelity tiers (real route > real compiled CSS > static HTML on real tokens), captured-fixture rules, throwaway-route hygiene, live animation delivery, and why mock code is exempt from code-quality gates (minimum code never means minimum design).
+Build at the highest fidelity available, on REAL captured data. **Read `references/build.md` now**: fidelity tiers (real route > real compiled CSS > static HTML on real tokens), captured-fixture rules, throwaway-route hygiene, live animation delivery, and why mock code is exempt from code-quality gates (minimum code never means minimum design). On a React stack, start the route from the harness kit (`assets/mock-harness/MockHarness.jsx`) so the capture script can drive it from the first build. Hand every builder `design-mocks/PLATFORM-KIT.md` and pass its "Allowed extras" to the harness `allow` prop. No new colour, radius, font, type size or styling class the product never uses, and no invented label for a concept the product already names: the kit says what exists.
 
-Every option designs its own states and ships the mock toolbar, with motion set by the prominence map: **read `references/states-and-chrome.md`** before building the first option. Every option is designed and shown at every screen-size preset, from phone to wide desktop.
+### Step 3a: Hero frames, then the user picks finalists
+
+Build every sketch that survived Step 2 as a **hero**: one frame on the real route, real
+components and real captured data, the populated state at Desktop in the product's default
+theme, with the art direction applied in full and its transitions wired: hover and press on every
+control, enter, exit, expand and collapse for anything it reveals, reduced motion honoured. A
+Creative hero also wires its signature moment as one play (the harness `play`, key P). Other
+states, sizes and the toolbar wait for Step 3b.
+
+**Budget: 20 minutes from "run a round" to heroes on screen**, on a surface whose kit, board and
+fixture exist (measured 2026-11-07, six heroes with the round-4 directions reused: builders 3.7 to
+4.9 min each in parallel, one grader per track 8.7 to 8.9 min; 14.3 min from dispatch to the last
+grade, 19.3 min from the user's message. Writing new directions is not inside that number yet).
+
+- Before dispatch, scaffold the route: the harness, `page.tsx` with every option registered and
+  each Creative `play` imported from its option file, and one stub per option
+  (`references/build.md`, "Builder contract"). Builders then edit only their own file.
+- Dispatch one builder per hero the moment the direction file is written, each with the **hero
+  builder contract** (`references/build.md`, "Builder contract"). The contract is the whole
+  prompt: its inputs, its four steps, its `<CHECK>` command and its 10-minute cap.
+- Each builder captures and checks its own hero and does its one look pass. Don't re-run its
+  checks: read `manifest.json` in its shots folder, where every unfiltered frame carries `checks`.
+- A capture that exits 2 needs a sign-in: the builder stops, you ask the user, then resume it.
+- Grade per track: dispatch one grader for a track the moment that track's last hero lands, with
+  the lean inputs (Step 5). Scores share one scale inside a track, where the user picks. The
+  graders are now the long pole. If a round runs over, give each hero its own grader: up to three
+  times the grader tokens (each re-reads the shared inputs) and no shared scale inside the track; the time saved is not measured.
+
+**Stop and show the heroes.** Give the user every hero screenshot with its grade, gates
+pending, labelled "hero, not final". Heroes are shown at whatever they score; a finalist is shown below 90
+only flagged, after its one fix loop or when the round had no time left for it. Recommend the best
+Simple and the best Creative as finalists, and keep a finalist for every family the user named.
+The user picks the finalists (any count); wait for the pick. A rejection here costs a hero, not a
+finished option set.
+
+### Step 3b: Finalists, in depth
+
+Each finalist gets the full build: every designed state, every screen-size preset, motion set by
+the prominence map, and the toolbar. **Read `references/states-and-chrome.md`** first.
+
+**Budget: 20 minutes from the pick to graded finalists on screen** (measured 2026-11-07, n=1:
+16.4 min for one finalist, a 10.5-minute build plus three graders in parallel).
+
+- Before dispatch, register every state in `page.tsx`, so each builder edits only its own option
+  file.
+- Dispatch one builder per finalist with the **finalist builder contract** (`references/build.md`):
+  the hero's grader fixes, the states, all six size presets, `<MATRIX>` and `<SHEET>`, a mandatory
+  look pass and a 12-minute cap.
+- The moment a builder lands, dispatch its three graders with the lean finalist inputs (Step 5).
+  Never start graders before the build is done: they read the shots folder, and would grade a
+  capture the builder has since replaced.
 
 ## Step 4: Every mock carries runnable checks, not claimed ones
 
-Every mock carries runnable checks as fixtures in the mock, never numbers asserted in prose: contrast (both themes), icon subset, geometry, paint, runtime smoke, motion budget, craft details. **Read `references/checks-and-craft.md` now** for each check's mechanics.
+Every finalist carries runnable checks as fixtures in the mock, never numbers asserted in prose: contrast (both themes), clipped text, platform fidelity and class census, icon subset, geometry, paint, runtime smoke, motion budget, craft details. Heroes run the kit's checks in their one state and theme. **Read `references/checks-and-craft.md` now** for each check's mechanics.
 
-## Step 4b: Craft pass. Look, critique, fix
+Checks measure the platform-matched design; they never redesign it. A failure on an element that
+matches the platform is reported as inherited and left as the platform has it.
 
-Before grading: screenshot every option (populated + weakest state, both themes), critique it as a design director against its benchmark and fix the top three issues, rewrite the microcopy, record interaction-pattern decisions, then run a task test and a 5-second test. Mechanics in `references/checks-and-craft.md`.
+## Step 4b: Craft loop. Capture, compare with the reference, fix, repeat
 
-## Step 5: Re-score, show the grades, then deliver
+Capture with `scripts/capture.mjs mock` (headless, no window opens; on exit 2 the user signs in
+once with its `signin` command). `--checks` runs the harness checks on every frame, so hygiene
+(contrast, clipped text, sideways scroll, platform fidelity, touch targets) is measured on every
+state, theme and size, not eyeballed. `capture.mjs sheet` tiles the frames, so one Read shows
+every state or every size.
 
-Re-score every built option. Anything under 90, or breaching a hard floor, is reworked or
-replaced **before** the user sees it. Ship the grading panel inside the mock so the user can
-challenge the judgement while looking at the design. The panel includes each option's
-prominence map (section, tier, the four axis values, and which are `estimated`).
+Look rounds are for looks: put the populated frame beside the reference its art direction borrows
+from and a live platform page, run the blur and greyscale tests, and fix the top three gaps. An
+option that reads as a different product is the first gap. Every fix moves the option toward the
+platform, never away from it.
 
-**Independent grader.** Self-grading inflates. After you score, dispatch the `ui-grader` agent
-(its persona, rubric, calibration and output format are built in, so don't repeat them). Pass
-only: the path to `design-mocks/GRADER-CONTEXT.md`, the prominence map, the screenshot paths
-from Step 4b, each option's code path and its track (Simple or Creative). Never pass your own
-scores. If the agent isn't available, use a fresh general subagent whose prompt opens by
-casting it as a principal product designer and expert UI/UX grader for this product, then
-gives the same inputs plus the rubric. Show both grades in the panel. Where the two
-totals differ by 10 or more, or either breaches a hard floor, show the grader's reasons next to
-yours and rework before delivering. The option's grade is the lower of the two. Add the grader's **Context gaps** line to `GRADER-CONTEXT.md` before the next round.
+- Heroes: one look pass inside the build (Step 3a).
+- Finalists: one look pass inside the build, plus **one fix loop** after grading, only if it still
+  ends inside the 20-minute round: resume the same builder (SendMessage) with the graders' top
+  fixes, re-capture, re-grade. A finalist still under 90 after it, or with no time left for it, is
+  shown with its grades and its failing gates named first.
+- Quick-mode options: one round.
 
-Confirm it actually rendered before handing off. Report what you verified visually versus
-programmatically. Never describe a frame you did not see.
+Then microcopy, interaction patterns, a task test and a 5-second test. Mechanics in
+`references/checks-and-craft.md`.
+
+## Step 5: Grade with three independent graders, then deliver
+
+Self-grading inflates, so the grade comes from graders who never see yours. Score each option
+yourself first, then dispatch fresh `ui-grader` agents (persona, rubric, calibration and output
+format are built in): **one per track** for heroes, **three in parallel per finalist**, one over
+the set for quick mode. Never pass your own scores.
+
+Pass the **lean inputs**, and only these:
+
+- `design-mocks/GRADER-CONTEXT.md` and `design-mocks/PLATFORM-KIT.md`;
+- each option's art-direction block, and the prominence map;
+- the ONE reference that option borrowed from, and ONE live page from `design-mocks/refs/platform/`;
+- shots: heroes, the populated frame with its `-blur` and `-grey`; finalists, `states.png`,
+  `sizes.png` and the full-size populated frame with its `-blur` and `-grey`;
+- the shots folder's `manifest.json` (each unfiltered frame's `checks`);
+- each option's code path, its track (Simple or Creative), and whether it is a hero.
+
+Not the whole board and not every platform page: graders given those read 28 to 31 files, and
+image reads are most of a grader's time (measured 2026-11-07).
+
+If the agent isn't available, use fresh general subagents whose prompts open by casting each as a
+principal product designer and design director for this product, with the same inputs plus
+`references/rubric.md`.
+
+**A finalist's grade is the median of the three totals**; a gate or floor failure counts when two
+of three report it. Show all three grades, the median and your own score in the grading panel,
+with the grader reasons for any dimension under 80%. A spread of 10 or more means the rubric reads
+two ways for that option: read the three reasons before reworking. Add the graders' **Context
+gaps** lines to `GRADER-CONTEXT.md` before the next round.
+
+A finalist under 90, or failing a gate or a hard floor, gets the one fix loop of Step 4b if it fits
+the round. Without time for it, or still under 90 after it, show it with the grades and say so
+first. Ship the grading panel inside the mock so the user can challenge the judgement while
+looking at the design. The panel includes each option's prominence map (section to tier, with the
+four axis values and which are `estimated`).
+
+Report what you verified from screenshots on disk versus what you verified programmatically;
+never describe a frame you did not see.
 
 ## Step 6: Wait for the pick
 
-Recommend one, and name the best option from the other track (Simple or Creative) as the
-alternative. The user decides. Do not start implementing on the strength of your own
+Recommend one finalist, and name the best finalist from the other track (Simple or Creative) as
+the alternative. The user decides. Do not start implementing on the strength of your own
 recommendation.
 
 When the user picks, append one line to `design-mocks/DECISIONS.md` (shape in
@@ -222,9 +381,9 @@ the SAME mock: same frame, states, fixtures and toolbar, each labelled with its 
 
 - Re-check the seams: the prominence map still has one primary, spacing and type scale match
   across the join, motion from both parents stays inside the budget.
-- Re-run only the Step 4 checks on changed parts, the Step 4b critique and task test, and the
-  independent grader. Skip new research and sketching.
-- Hybrids must clear 90 like any option. If a combination can't (two primaries fighting), say
+- Re-run only the Step 4 checks on changed parts, the Step 4b loop and task test, and the three
+  graders. Skip new research, sketching and heroes.
+- Hybrids are held to the finalist rule (Step 5): aim for 90, one fix loop, then shown flagged. If a combination can't (two primaries fighting), say
   so with the grade and offer the closest hybrid that can.
 
 Then back to Step 6 for the pick.
@@ -237,8 +396,9 @@ test and review gates green. Some build configs ignore type errors (Next.js
 yourself.
 
 Before writing code, **read `references/handoff.md`**: extract the implementation spec from
-the chosen mock, build to it, then run the fidelity check (real build screenshotted against the
-mock, same states and themes, differences listed and fixed). The pick is the mock the user
+the chosen mock, transitions included, build to it, then run the fidelity check (real build
+screenshotted against the mock in the same states and themes, every mock transition confirmed
+wired with its reduced-motion fallback, differences listed and fixed). The pick is the mock the user
 saw; the shipped version must not quietly drift from it. Delete the mock and any throwaway
 route only after the fidelity check passes.
 

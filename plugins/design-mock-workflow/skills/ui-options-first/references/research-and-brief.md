@@ -86,7 +86,7 @@ first run. Keep it to one page, in this shape:
   chevrons", "settings options must fit the 640px pane"), add it as a house rule;
 - the user picks an option for a stated reason, add the reason to the quality bar if it
   generalises;
-- the grader reports a context gap (see Step 5), add the missing fact;
+- a grader reports a context gap (see Step 5), add the missing fact;
 - you discover a constraint the hard way (a token that fails contrast, a shell width), add it.
 
 One line per rule, no dates or ticket numbers, no incident stories. Delete a rule the user
@@ -107,6 +107,6 @@ Read it at Step 0, before sketching. Look for patterns across rounds, not single
 which track wins on which kind of surface (settings, dashboards, editors), which reasons recur
 ("too busy", "loved the motion"), which benchmark products the user responds to. Use them to
 decide where to sketch extra directions and what the Creative track should push. Never use the
-log to drop a track: the 3 + 3 minimum still holds. A recurring reason that is really a rule
+log to drop a track: the 3 + 3 hero minimum still holds. A recurring reason that is really a rule
 ("never use modals for single fields") moves to `GRADER-CONTEXT.md` as a house rule.
 

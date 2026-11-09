@@ -9,11 +9,11 @@ graded /100 against a fixed rubric. You pick one, and Claude implements that.
 | Skill | Fires when |
 |---|---|
 | `ui-options-first` | Any visual change: colour, layout, component, icon, spacing, animation. Holds the 7-step flow, the rubric, fidelity tiers, runnable checks and fixture rules. |
-| `design-brief-authoring` | The options will come from a tool with no codebase access (Claude Design, a design agent, a contractor). Writes a verified, design-first brief. |
+| `design-brief-authoring` | The options will come from a tool with no codebase access (Claude Design, a design agent, a contractor). Writes a verified, design-first brief, reuses what `ui-options-first` already recorded in `design-mocks/`, and checks it before sending with the bundled `scripts/check-brief.mjs` (Node, no dependencies). The plugin's `PostToolUse` hook runs that check on every write to a `*-brief.md` and hands findings back to Claude. |
 
 | Agent | Does |
 |---|---|
-| `ui-grader` | The independent grader. A principal product designer persona with the rubric, calibration and output format built in. Dispatched at Step 5; never sees the author's scores. |
+| `ui-grader` | The independent grader. A principal product designer and design director persona with the rubric, calibration and output format built in. Three grade each finalist and the median is the grade; heroes get one per track. None sees the author's scores. |
 
 | Command | Does |
 |---|---|
@@ -23,17 +23,18 @@ graded /100 against a fixed rubric. You pick one, and Claude implements that.
 
 0. Read `design-mocks/REFERENCES.md`, the project's sourced notes on how comparable products solve this. On first run Claude researches the domain and creates it; without web access it writes entries marked `inferred`.
 1. Generate directions (with `ui-ux-pro-max` and `interface-kit` if installed).
-2. Paper-sketch each direction, grade it /100, and cut anything under 90 **before** building. Every round has at least 3 **Simple** options (conventional, cheap to ship) and 3 **Creative** ones (new layout or interaction, richer visuals). Then map how prominent each section should be from how often it's used, what it's worth, how urgent it is and how deep it goes.
-3. Build at the highest fidelity available: a throwaway route on the real component library, then real compiled CSS, then static HTML on real tokens. Feed it captured, redacted real data. Each option designs its own loading, empty and error states (graded at its weakest state), not a shared fallback. Every mock ships a toolbar: state switcher, hierarchy overlay, side-by-side compare, a Play walkthrough and rationale pins. Motion follows a budget set by each section's prominence.
+   Then art direction: screenshot 6 to 10 benchmark screens into a reference board, measure them (type sizes, row height, colour ratio, depth), and give every direction a numeric art direction with one bold move and the reference it borrows from.
+2. Paper-sketch each direction and grade its structure before building (the look waits for pixels). Every round has at least 3 **Simple** options (conventional, cheap to ship) and 3 **Creative** ones (new layout or interaction, richer visuals). Then map how prominent each section should be from how often it's used, what it's worth, how urgent it is and how deep it goes.
+3. Build each surviving sketch as a cheap **hero frame**: a still on the real route with real components and real data, populated state, desktop. Every agent works from a platform kit (the product's own layout, the classes it actually uses, colour and type by role, its copy), so options look like they already ship in the product. Builders screenshot their own hero to fix its looks, and clear two checks: no clipped text, and no colour, radius, font or class the product doesn't use. You see all the heroes with their grades and pick the finalists. Finalists are then built in depth: every designed loading, empty and error state, every screen size, motion on a budget, and a toolbar from the bundled harness kit (state switcher, hierarchy overlay, compare, Play, rationale and feedback pins, size frames, blur and greyscale tests).
 4. Put runnable checks in the mock: contrast in both themes, icon subset, geometry, paint, visibility, motion budget, craft details (concentric radii, tabular numbers, every control state, no layout shift).
-   Then a craft pass: screenshot each option, critique it as a design director, fix the top three issues, rewrite the microcopy, and run a task test and a 5-second test. Each sketch names its best-in-class benchmark; each Creative option names its signature moment.
-5. Re-grade the built options, have a fresh subagent grade them independently (the lower grade counts), ship the grading panel inside the mock, and recommend one.
+   Then the craft loop: a bundled script screenshots every option to files, each screenshot goes beside the reference it borrows from, and the top three gaps get fixed, looks first. One round for heroes, three or more for finalists.
+5. Three independent graders score every finalist beside the reference board; the median is the grade. Heroes get one grader per track, started as soon as that track is captured. Accessibility and checks are pass/fail gates, so points come from looks and UX. Finalists must clear 90. The grading panel ships inside the mock.
 6. Wait for the pick. Feedback comes as pinned notes copied straight out of the mock. The pick and its reason go into a taste log that steers future rounds. A pick like "A's header with C's list" gets a fast remix round of 2 to 3 hybrids.
 7. Extract an implementation spec from the chosen mock, build to it, then screenshot the real build against the mock and fix every difference before deleting the mock.
 
-**Rubric:** UX clarity 20 · Hierarchy fit 15 · Visual craft 20 · Density 10 · Accessibility 15 ·
-Domain fit 10 · Implementation cost 10. Threshold 90. Any dimension under 60% of its weight fails the option
-outright.
+**Rubric:** Aesthetic quality 30 · Point of view 10 · UX clarity 20 · Hierarchy fit 15 · Density 10 ·
+Domain fit 10 · Implementation cost 5. Threshold 90. Any dimension under 60% of its weight fails the
+option outright. Gates (pass/fail): accessibility, the runnable checks, token-only fidelity.
 
 ## Install
 
@@ -82,11 +83,26 @@ implement with design tokens and delete the mock.
 - `design-mocks/<surface>-spec.md`: the implementation spec for the chosen option.
 - `design-mocks/GRADER-CONTEXT.md`: a one-page project brief (product, users, design system, house rules) the grader reads every run. Written once, kept up to date by the skill.
 - `design-mocks/fixtures/<surface>.json`: redacted captured responses. Git-ignored.
+- `design-mocks/<surface>-art-direction.md`: the measured spec and each option's art direction.
+- `design-mocks/PLATFORM-KIT.md`: the product learned once (page layout from live pages, class usage census, colour and type by role, copy, traps). Refreshed when theme files change. Commit it.
+- `design-mocks/class-census.json`: how often the product uses each styling class and each component variant/colour combo, from the bundled `scripts/class-census.mjs`. Mocks default to what the product uses most, even when that fails a check; the failure goes to you as a platform follow-up.
+- `design-mocks/refs/platform/`: screenshots of the product's own live pages, the base layer every option is compared against. Git-ignored.
+- `design-mocks/refs/<surface>/`: the reference board (screenshots of other products). Git-ignored.
+- `design-mocks/shots/<surface>/`: captured mock screenshots per craft round. Git-ignored.
 - `design-mocks/*.html` mock pages and throwaway routes, deleted after the pick. Git-ignored.
 
 Suggested `.gitignore` lines (the skill checks the fixtures entry before it writes one):
 
 ```
 design-mocks/fixtures/
+design-mocks/refs/
+design-mocks/shots/
 design-mocks/*.html
 ```
+
+**Screenshots** come from the bundled `scripts/capture.mjs`, which needs Node 22+ and Chrome, Edge
+or Chromium. Captures run in a headless browser, so no window
+opens and nothing takes focus. When the app needs a sign-in, the script asks you to run its
+`signin` command and sign in once per round; it copies that sign-in's local cookies and never
+types credentials. Each run opens and closes its own headless tab, so parallel builders can
+capture at once.
