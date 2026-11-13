@@ -62,6 +62,10 @@ cover four kinds of claim, and the last two are the ones that slip through:
 - **Domain claims**: what fixes what, what a format allows. "Text recognition recovers an
   encrypted PDF" is a claim about the world; it needs a source or it is cut.
 
+Beside those rows, a `## Requests` table lists every request the surface makes (discovery step 7),
+each under the name the brief uses for it. Brief §10 turns every row into scenarios, and the check
+in step 4 matches the two.
+
 Example rows, from one web project — yours will name different files:
 
 | Fact | Value | Verified by |
@@ -101,6 +105,9 @@ options reach your human partner. The ban is only on text leaving this session.
 - An example thesis in the directions ask, or earlier rounds' directions left unnamed
 - Widths that stop at 1440, or nothing said about what 1920 and wider should hold
 - An animation in the brief with no job named beside it
+- Anything that lets one direction come back as several artboards, one per state or per width
+- A scenario list typed from memory rather than read off the Requests table
+- A **needs API** idea that appears in the notes but carries no mark on the artboard
 
 ## Common mistakes
 

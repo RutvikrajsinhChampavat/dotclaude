@@ -24,7 +24,7 @@ rg -l "tailwind|styled-components|\.scss|createTheme|ThemeData|SwiftUI|@Composab
 |---|---|
 | Redesigning a surface that ships | all of them |
 | Extending a surface that ships | all of them; scope the problem list to the part being changed |
-| A feature with no UI yet | 2, 3, 4b, 4c, 5, 6 — and step 4 becomes "what will the API give us", answered from the endpoint or the spec, or marked as undecided |
+| A feature with no UI yet | 2, 3, 4b, 4c, 5, 6, 7 — and step 4 becomes "what will the API give us", answered from the endpoint or the spec, or marked as undecided |
 
 For something new there is no "what is there now", so the brief's §4 carries the job to be done
 and the surrounding surfaces it has to sit beside instead.
@@ -240,7 +240,7 @@ two or three directions on new ground.
 next brief pays for the same research. If nothing blocks it, do it; if something does, say so in
 the handoff rather than dropping it silently.
 
-## 7. States that exist
+## 7. States that exist, and the requests behind them
 
 Empty, first-run empty, filtered-to-nothing, error, loading, partial, and every blocked or
 disabled control. Blocked controls need their REASONS — unguessable from outside, and the designer
@@ -251,8 +251,27 @@ has to put them somewhere.
 rg -n "isLoading|isError|length === 0|skeleton|EmptyState|Suspense" <dir>
 ```
 
+**Every request the surface makes** gets a row in a `## Requests` table in the facts file: the name
+the brief will use for it, what triggers it, how it fails (the status and body the producer
+sends), and what the person keeps after the failure. Brief §10 turns each row into three
+scenarios, and `scripts/check-brief.mjs` flags any row whose name never appears beside a failure
+there. The quiet ones get missed: the page load, a check that runs while someone types, a second
+save.
+
+*Example, React + RTK Query.* Search the surface and every hook it imports: a shared options hook
+is where the page-load request hides.
+```bash
+rg -n "use[A-Z][A-Za-z]+(Query|Mutation)\(" <surface-dir> <imported-hook-files>
+rg -n "fetch\(|axios\.|useSWR\(" <surface-dir> <imported-hook-files>
+```
+
+| Request | Trigger | Failure | What survives | Verified by |
+|---|---|---|---|---|
+| Save draft | the Save as draft button | 500 with a detail string | the question and answer as typed | `<form-file>:<line>`, `<route-file>:<line>` |
+
 For a feature not built yet, this is a design question rather than a discovery one: list the states
-it will have and let the brief ask for them.
+it will have and the requests it will make (from the endpoint or the spec), and let the brief ask
+for them.
 
 ## 8. Before any of it — is the tree current?
 

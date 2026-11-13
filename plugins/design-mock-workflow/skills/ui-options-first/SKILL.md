@@ -276,8 +276,9 @@ finished option set.
 
 ### Step 3b: Finalists, in depth
 
-Each finalist gets the full build: every designed state, every screen-size preset, motion set by
-the prominence map, and the toolbar. **Read `references/states-and-chrome.md`** first.
+Each finalist gets the full build: every designed state (each request's loading and failure
+included), every screen-size preset at real size, motion set by the prominence map, and the
+toolbar, all in one artboard per option. **Read `references/states-and-chrome.md`** first.
 
 **Budget: 20 minutes from the pick to graded finalists on screen** (measured 2026-11-07, n=1:
 16.4 min for one finalist, a 10.5-minute build plus three graders in parallel).

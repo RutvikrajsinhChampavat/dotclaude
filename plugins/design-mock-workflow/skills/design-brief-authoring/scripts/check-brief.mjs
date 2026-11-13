@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Pre-send lint for a design brief. Exits 1 on anything a design tool with no codebase access
 // cannot recover from. Semantic contradictions are out of reach; the consistency read covers those.
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
+import { basename } from "node:path";
 
 const USAGE = "usage: node check-brief.mjs <brief.md> [--allow <check-id>]...\n";
 
@@ -30,13 +31,13 @@ const LINE_CHECKS = [
 ];
 
 const EXAMPLE_THESIS = /thesis[^.\n]{0,80}(\(|e\.g\.|for example|such as|like)\s*["“]/i;
-const HEADING = /^#{1,3}\s+(.+)$/;
+const HEADING = /^(#{1,3})\s+(.+)$/;
 const DESIGN_BAR = /design bar/i;
 const ENGINEERING = /\b(data|tokens?|constraints|schema)\b/i;
 const TOKENS = /\btokens?\b/i;
 const THEME_COLUMN = /\b(light|dark|high contrast)\b/i;
 const SINGLE_THEME = /\b(one theme|single theme|light only|dark only|no dark theme)\b/i;
-const SCREEN_WIDTH = /\b\d{3,4}\s*(px)?\s*(wide|width)\b|\bscreen sizes?\b|\bviewport\b/i;
+const SCREEN_WIDTH = /\b\d{3,4}\s*(px)?\s*(wide|width)\b|\bscreen sizes?\b|\bviewport\b|\b(phone|tablet|laptop|desktop|wide|ultra-wide)\s+\d{3,4}\b/i;
 const WIDTH_CONTEXT = /\b(wide|width|screen|viewport|monitor)\b|×/i;
 const PIXEL_NUMBER = /\b(\d{3,4})\b/g;
 const WIDE_MIN = 1920;
@@ -45,6 +46,19 @@ const MOTION_HEADING = /\bmotion\b/i;
 const REDUCED_MOTION = /reduced[- ]motion/i;
 const NEEDS_API = /needs API/i;
 const ABSENT_DATA = /\b(does not|doesn't|do not|don't|cannot|can't) (have|show|know|carry)\b/i;
+const SPLIT_BOARDS = /\bevery (art)?board at every width\b|\b(art)?boards? (per|for each|for every) (state|width|screen size)\b/i;
+const ONE_BOARD = /\bone (art)?board per direction\b/i;
+const CONTROL_BAR = /\bcontrol bar\b/i;
+const REAL_SIZE = /\b(real|actual) size\b|\b1:1\b/i;
+const PROTOTYPE_HEADING = /\b(prototype|artboards?)\b/i;
+const REQUESTS_HEADING = /^#{1,6}\s+Requests\b/i;
+const ANY_HEADING = /^#{1,6}\s/;
+const TABLE_RULE = /^\s*\|[\s:|-]+\|\s*$/;
+const LIST_ITEM = /^\s*([-*]|\d+[.)])\s/;
+const FAILURE = /\b(fail(s|ed|ing|ure)?|error|interrupted|offline|time[sd]? out)\b/i;
+const NEEDS_LABEL = /needs (API|system change)/i;
+const BACKEND_MARKS = /\bbackend marks?\b/i;
+const SHIPS_TODAY = /\bships today\b/i;
 
 function parseArgs(argv) {
   const [path, ...rest] = argv;
@@ -68,7 +82,7 @@ function lineFindings(lines) {
 function headings(lines) {
   return lines.flatMap((text, i) => {
     const match = HEADING.exec(text);
-    return match ? [{ line: i + 1, title: match[1] }] : [];
+    return match ? [{ line: i + 1, level: match[1].length, title: match[2] }] : [];
   });
 }
 
@@ -110,6 +124,86 @@ function motionSection(heads, text) {
   return [{ line: section.line, id: "motion", message: "motion section never states the reduced-motion version" }];
 }
 
+function singleBoard(lines, text) {
+  const finding = (line, message) => ({ line, id: "single-board", message });
+  const split = lines.flatMap((line, i) =>
+    SPLIT_BOARDS.test(line) ? [finding(i + 1, "asks for an artboard per state or width; ask for one artboard per direction")] : [],
+  );
+  const missing = [
+    { pattern: ONE_BOARD, message: "never asks for one artboard per direction; states and widths come back as separate artboards" },
+    { pattern: CONTROL_BAR, message: "no control bar; states and widths cannot be reached inside one artboard" },
+    { pattern: REAL_SIZE, message: "widths not asked for at real size; wide layouts get shrunk to fit" },
+  ].filter((r) => !r.pattern.test(text));
+  return [...split, ...missing.map((r) => finding(1, r.message))];
+}
+
+function costMarks(text) {
+  if (!NEEDS_LABEL.test(text)) return [];
+
+  const finding = (message) => ({ line: 1, id: "cost-marks", message });
+  return [
+    { pattern: BACKEND_MARKS, message: "needs API ideas get no mark on the artboard; ask for backend marks" },
+    { pattern: SHIPS_TODAY, message: "no Ships today switch; nobody can see what ships without backend work" },
+  ]
+    .filter((r) => !r.pattern.test(text))
+    .map((r) => finding(r.message));
+}
+
+function sectionOf(lines, heads, pattern) {
+  const index = heads.findIndex((h) => pattern.test(h.title));
+  if (index < 0) return null;
+
+  const head = heads[index];
+  const next = heads.slice(index + 1).find((h) => h.level <= head.level);
+  return { line: head.line, lines: lines.slice(head.line, next ? next.line - 1 : lines.length) };
+}
+
+function listItems(lines) {
+  return lines.reduce((items, line, i) => {
+    if (!line.trim()) return items;
+    if (LIST_ITEM.test(line) || !items.length || !lines[i - 1].trim()) return [...items, line];
+    return [...items.slice(0, -1), `${items.at(-1)} ${line.trim()}`];
+  }, []);
+}
+
+function requestNames(factsText) {
+  const lines = factsText.split("\n");
+  const start = lines.findIndex((line) => REQUESTS_HEADING.test(line));
+  if (start < 0) return [];
+
+  const rest = lines.slice(start + 1);
+  const end = rest.findIndex((line) => ANY_HEADING.test(line));
+  return (end < 0 ? rest : rest.slice(0, end))
+    .filter((line) => line.trim().startsWith("|") && !TABLE_RULE.test(line))
+    .slice(1)
+    .map((line) => line.split("|")[1].replace(/[*`]/g, "").trim())
+    .filter(Boolean);
+}
+
+function namesItem(item, name, names) {
+  const longer = names.map((n) => n.toLowerCase()).filter((n) => n.length > name.length && n.includes(name.toLowerCase()));
+  const rest = longer.reduce((text, n) => text.split(n).join(" "), item);
+  const word = new RegExp(`\\b${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i");
+  return word.test(rest) && FAILURE.test(item);
+}
+
+function scenarioCoverage(path, lines, heads) {
+  const finding = (line, message) => [{ line, id: "scenario-coverage", message }];
+  const factsPath = path.replace(/\.md$/i, ".facts.md");
+  if (!existsSync(factsPath)) return finding(1, `no ${basename(factsPath)} beside the brief; scenarios have nothing to come from`);
+
+  const names = requestNames(readFileSync(factsPath, "utf8"));
+  if (!names.length) return finding(1, "facts file has no Requests table; list every request the surface makes");
+
+  const section = sectionOf(lines, heads, PROTOTYPE_HEADING);
+  if (!section) return finding(1, "no prototype section to hold the scenarios");
+
+  const items = listItems(section.lines).map((item) => item.toLowerCase());
+  return names
+    .filter((name) => !items.some((item) => namesItem(item, name, names)))
+    .flatMap((name) => finding(section.line, `request "${name}" has no failure scenario in the prototype section`));
+}
+
 function requiredPresence(text) {
   const required = [
     { id: "screens", pattern: SCREEN_WIDTH, message: "no screen widths named; designs come back at one width" },
@@ -119,7 +213,7 @@ function requiredPresence(text) {
   return required.filter((r) => !r.pattern.test(text)).map((r) => ({ line: 1, id: r.id, message: r.message }));
 }
 
-function lint(text) {
+function lint(text, path) {
   const lines = text.split("\n");
   const heads = headings(lines);
   return [
@@ -128,6 +222,9 @@ function lint(text) {
     ...tokenThemes(lines, heads, text),
     ...wideScreen(lines),
     ...motionSection(heads, text),
+    ...singleBoard(lines, text),
+    ...costMarks(text),
+    ...scenarioCoverage(path, lines, heads),
     ...requiredPresence(text),
   ].sort((a, b) => a.line - b.line);
 }
@@ -139,7 +236,7 @@ function main() {
     process.exit(2);
   }
 
-  const findings = lint(readFileSync(args.path, "utf8")).filter((f) => !args.allowed.has(f.id));
+  const findings = lint(readFileSync(args.path, "utf8"), args.path).filter((f) => !args.allowed.has(f.id));
   findings.forEach((f) => process.stdout.write(`${args.path}:${f.line}: [${f.id}] ${f.message}\n`));
   process.stdout.write(findings.length ? `${findings.length} finding(s)\n` : "brief passes\n");
   process.exit(findings.length ? 1 : 0);

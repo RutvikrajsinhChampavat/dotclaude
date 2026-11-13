@@ -57,7 +57,7 @@ makes the mock answer "what does this feel like in every situation" without the 
 
 **Start from the kit; don't rebuild the chrome.** On a React stack, copy
 `assets/mock-harness/MockHarness.jsx` from this skill into the mock route folder (the app can't
-import from the skill directory) and wrap the page in it. It ships items 1 to 6 below plus blur
+import from the skill directory) and wrap the page in it. It ships items 1 to 7 below plus blur
 and greyscale filters (`B`, `M`), a reduced-motion switch (`R`), the grades panel (`G`), the
 contrast and size checks, and the `window.__mock` handshake the capture script relies on. The
 mock's own code is then the options and their states, nothing else. Mark sections in the option
@@ -73,6 +73,9 @@ contract (`meta`, `set`, `current`, `filter`).
    by a real captured fixture (overflow = the longest or largest real case). Loading renders
    **skeletons shaped like the real content** (same row heights, line lengths, avatar slots),
    never a centred spinner; the skeleton-to-content swap cross-fades with no layout shift.
+   Then one entry per request the surface makes (read its data hooks or fetch calls): the request
+   running, the request failing, and what the person keeps after the failure. The six above
+   never name a failed save or a failed background check, which is where scenarios go missing.
 2. **Hierarchy overlay.** A toggle (`H`) that tints each section by its Step 2b tier and labels
    it `primary / secondary / tertiary / contextual` with its axis values; `estimated` ones say
    so. Re-tints per state, since prominence is state-dependent.
@@ -91,8 +94,16 @@ contract (`meta`, `set`, `current`, `filter`).
    localStorage until cleared. Replaces "screenshot plus describe which dropdown".
 
 6. **Screen sizes.** A size switcher (`V` cycles presets) plus an **All sizes** view
-   (`Shift+V`) that lays every preset side by side, scaled to fit, for the current option, state
-   and theme. See "Screen sizes" below for the presets and how frames must be built.
+   (`Shift+V`) that lays every preset side by side at its real size for the current option, state
+   and theme; the view scrolls, and no frame is shrunk to fit. See "Screen sizes" below for the
+   presets and how frames must be built.
+
+7. **Backend marks and Ships today.** Put `data-needs="API: <field>"` on every element that shows
+   data the captured fixture does not hold, and `data-needs="System: <what changes>"` on one that
+   needs a new token, variant or shared component. `N` tags each with its cost, on when the mock
+   opens. `T` (Ships today) hides every marked element, so the user sees what ships with no
+   backend work; an option with a fallback reads `today` from its render props and draws it.
+   Captures hide the tags with the rest of the chrome.
 
 **Optional: add when the surface calls for it:** persona/role switcher (when frequency differs
 by role), a density toggle, a ⌘K command
@@ -169,8 +180,8 @@ also gets frames at that container's real widths, read from the code.
 
 - If the app uses viewport media queries or breakpoint hooks, render each frame as an
   `<iframe>` of the same mock route at the preset's width and height (add `?frame=1` to hide the
-  toolbar inside it), and scale the iframe down with `transform: scale()` to fit the All sizes
-  view. The layout inside is then real.
+  toolbar inside it), at 1:1; the All sizes view scrolls. The layout inside is then real, and so
+  is its size: a 2560 frame shrunk to fit a laptop hides the wide-screen problems it exists to show.
 - If the surface is built on container queries (`@container`), a sized `div` is enough, and the
   frames can share one React tree.
 - Never fake a size by shrinking with `zoom` or `transform` alone: the layout stays desktop.
@@ -189,3 +200,19 @@ also gets frames at that container's real widths, read from the code.
 
 Responsive checks run in Step 4 for every preset; the craft loop and the graders look at the
 sizes too.
+
+**On a design-tool canvas (Claude Design, Figma), states and sizes still go on one board per
+option.** An artboard per state or per width is a repeated miss: separate frames cannot be played.
+Build one board with a chrome bar along its top:
+- a state select listing every scenario, each request's loading and failure included;
+- width presets, each at real size, with the board scrolling when a preset is wider than it;
+- the theme;
+- a data-variant select, a "fail the next request" switch, and replay;
+- backend marks, on at open, naming the field or system change on each element that needs one,
+  and a Ships today switch that hides those elements.
+
+A Claude Design board has no documented way to frame another, so put the page in a frame at the
+preset's real pixel width and turn the page's width `@media` rules into `@container` rules on that
+frame. Toasts and fly-in ghosts become `absolute` inside the frame. List in the notes what still
+follows the window: component-library breakpoints, a fluid root font and `pointer: coarse`. Save
+or publish lands somewhere visible on the board, so the flow plays end to end.

@@ -258,7 +258,9 @@ Design mock (throwaway code): no types, tests, lint or tsc. Root: <repo root>. O
    theme, the art direction in full, and its transitions: hover and press on every control,
    enter, exit, expand and collapse for anything it reveals, every tween 500 ms or less, reduced
    motion honoured. Keep `export const play` (page.tsx imports it). Creative: the signature
-   moment goes in that `play`.
+   moment goes in that `play`. Mark every element the fixture cannot feed with
+   `data-needs="API: <field>"`, and every new token, variant or shared component with
+   `data-needs="System: <change>"`.
 2. Run: <CHECK>
 3. Read the populated PNG beside design-mocks/refs/<surface>/<borrowed ref> and
    design-mocks/refs/platform/<page>. Fix the top three look gaps and every failed check your option
@@ -275,8 +277,8 @@ steps:
 
 ```
 Grader fixes to apply: <the hero graders' top fixes>.
-1. In ONE edit pass on <id>.tsx: the fixes; the designed states <states> in the option's own visual
-   language; every size preset; motion per the direction, every tween 500 ms or less, reduced
+1. In ONE edit pass on <id>.tsx: the fixes; the designed states <states>, each request's loading
+   and failure included, in the option's own visual language; every size preset; motion per the direction, every tween 500 ms or less, reduced
    motion honoured. Keep the signature moment and its data attributes working.
 2. Run: <MATRIX>; <SHEET>
 3. LOOK PASS, never skipped: Read states.png, sizes.png and the full-size populated frame beside
