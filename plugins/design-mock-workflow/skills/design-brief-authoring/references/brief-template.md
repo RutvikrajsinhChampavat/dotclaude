@@ -1,7 +1,7 @@
 # The brief — what it is, in order
 
 Twelve sections. The order is the point: the bar lands before the constraints, and the constraints
-land before the artboard list. Cut a section only when the fact table proves it empty.
+land before the prototype. Cut a section only when the fact table proves it empty.
 
 Slots marked **REQUIRED** are what a brief is missing when designs come back wrong.
 
@@ -24,6 +24,9 @@ how long people sit with it · and how self-evident the controls must be.
 **REQUIRED: who actually uses this.** Non-expert audiences cannot decode an icon-only control;
 expert tools drown in labels. Name the audience and let it decide. "No instructional copy" and
 "assume expertise" are different instructions — say which one you mean.
+
+**REQUIRED: the house rules.** Copy every UI house rule from `GRADER-CONTEXT.md` into §2 in plain
+words. Without them a design tool defaults to uppercase labels, pencil icons and centred columns.
 
 ## 3. Scope
 
@@ -74,7 +77,8 @@ them, each with its meaning in the user's words. The designer will name states; 
 they may name. A state outside it is labelled **needs API**.
 
 Close with: anything needing data beyond this is allowed, but label it **needs API** and name the
-field, so the cost is visible at decision time. Its sibling label, for build cost rather than data
+field, so the cost is visible at decision time. The label sits on the element itself in the
+artboard (§10), where the decision gets made. Its sibling label, for build cost rather than data
 cost, lives in §7.
 
 ## 6. What the actions mean
@@ -106,7 +110,7 @@ KNOW. Three buckets, and the designer needs all three:
 Write it as information, never as a veto. The reason to ask for options at all is to get something
 better than what we would build by default, and a brief reading "do only what is free" hands back
 the current design with new spacing. So the second and third buckets stay open: label such an idea
-**needs system change**, name what it changes, and let the recommendation weigh that against what
+**needs system change** on the element, name what it changes, and let the recommendation weigh that against what
 it buys. Same bargain as `needs API` in §5.
 
 ## 8. Tokens
@@ -126,13 +130,46 @@ weights, the type scale in px, radii, shadows, and the icon set the design must 
 Real products solving this problem, each with the specific mechanism to study. Ask which ideas were
 taken and from where. Where the project has a fixed palette and type, forbid taking theirs.
 
-## 10. Artboards
+## 10. The prototype
 
-**REQUIRED: interactive, reached by clicking.** Enumerate states as things the reviewer performs —
-hover, focus, open it, bind it, undo it, trigger the error, toggle the theme. Static frames only
-for what interaction cannot reach.
+**REQUIRED: one artboard per direction.** Each direction comes back as one artboard that holds all
+of it: every scenario below, every width in §3, every theme and every data variant. Directions sit
+side by side on the canvas. A direction split across several artboards, by state or by width,
+cannot be played from one place.
 
-Every artboard at every width in §3.
+The artboard carries a control bar along its top edge, outside the design being judged:
+
+- a state picker listing the scenarios below, by number and in groups;
+- the widths from §3, each drawn at its real size; when a width is wider than the artboard, the
+  artboard scrolls, and nothing is shrunk to fit;
+- the themes the product ships;
+- the data variants, such as an account full of data, an empty one, and one with nothing to choose;
+- a switch that makes the next request fail, so every failure is reached by playing;
+- backend marks, on when the artboard opens: a tag on every element labelled **needs API** or
+  **needs system change**, naming the field or the change. Switching them off shows the clean
+  design;
+- a Ships today switch that hides every marked element, or swaps in what the product can show
+  without it, so the reviewer sees what ships with no backend work;
+- replay, which starts the current scenario again.
+
+Every action that finishes lands somewhere visible in the artboard: a saved draft in its list, a
+published item where people find it. When that place is out of scope, a plain stand-in for it.
+Someone can then play the whole flow through.
+
+**REQUIRED: the scenarios, numbered, read off the facts file.** Each is something the reviewer does
+(hover, open it, undo it, save with the network down) and the state picker reaches. Static frames
+only for what interaction cannot reach. Build the list from:
+
+- every row of the facts file's Requests table, three times over: while it runs, when it fails,
+  and what the person still has after the failure. Name the request as the table names it;
+- every status, outcome and reason in §5's closed sets. Values someone picks from a list (an
+  expiry, a page size) stay out: the prototype shows them by being used;
+- every reason in §7 that a control is blocked;
+- the data variants: a first visit, an empty account, nothing available to choose;
+- leaving partway through and coming back.
+
+A list typed from memory drops whatever its author forgot, and the tool builds only what the list
+names.
 
 **REQUIRED: what the sample data must span.** Sample data that dodges the problem hides it. If the
 problem is dates, the data spans days and weeks. If it is overflow, something overflows. The rows

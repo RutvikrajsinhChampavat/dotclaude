@@ -25,13 +25,17 @@
 //
 // Mark sections in the option code: data-tier="primary|secondary|tertiary|contextual" plus
 // data-axes="daily · high value · glance (estimated)" feed the H overlay; data-why="…" feeds the ? pins.
+// data-needs="API: duplicate's question text" or "System: new chip variant" marks backend cost (N, on at open);
+// Ships today (T) hides every marked element, and render gets `today` for an option that draws a fallback.
 // Keys: 1-9 option · S state · H tiers · ? rationale · F feedback · V size · Shift+V all sizes ·
-// B blur · M greyscale · R reduced motion · G grades · P play. Keys are ignored while typing.
+// B blur · M greyscale · R reduced motion · G grades · P play · N backend marks · T ships today.
+// Keys are ignored while typing.
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 const PRESETS = [[390, 844, "Phone"], [834, 1194, "Tablet"], [1280, 800, "Laptop"], [1440, 900, "Desktop"], [1920, 1080, "Wide"], [2560, 1440, "Ultra-wide"]];
 const TIERS = { primary: "#e5484d", secondary: "#f5a524", tertiary: "#3e9bff", contextual: "#8e4ec6" };
+const NEEDS_COLOUR = "#f76b15";
 const FILTERS = { blur: "blur(6px)", mono: "grayscale(1)" };
 const CHROME = { position: "fixed", zIndex: 2147483000, font: "500 12px/1.3 system-ui, sans-serif", color: "#f4f4f5" };
 const PANEL = { background: "rgb(24 24 27 / .96)", border: "1px solid rgb(255 255 255 / .1)", borderRadius: 12, boxShadow: "0 1px 2px rgb(0 0 0/.3), 0 12px 40px -8px rgb(0 0 0/.5)" };
@@ -47,12 +51,13 @@ export default function MockHarness({ name = "mock", options, states = ["populat
   const [sysTheme, setSysTheme] = useState("light");
   const [filter, setFilter] = useState("");
   const [reduce, setReduce] = useState(false);
-  const [layer, setLayer] = useState({ tiers: false, why: false, fb: false, grades: false });
+  const [today, setToday] = useState(false);
+  const [layer, setLayer] = useState({ tiers: false, why: false, fb: false, grades: false, needs: true });
   const [vp, setVp] = useState("full");
   const [checks, setChecks] = useState(null);
   const theme = themeProp ?? sysTheme;
   const live = useRef({});
-  live.current = { option, state, theme, filter, reduce };
+  live.current = { option, state, theme, filter, reduce, today };
 
   useEffect(() => {
     const m = window.matchMedia("(prefers-color-scheme: dark)");
@@ -68,6 +73,7 @@ export default function MockHarness({ name = "mock", options, states = ["populat
     if (next.theme && next.theme !== live.current.theme) setTheme?.(next.theme);
     if (typeof next.filter === "string") setFilter(next.filter);
     if (typeof next.reduce === "boolean") setReduce(next.reduce);
+    if (typeof next.today === "boolean") setToday(next.today);
   }, [ids.join(), states.join(), setTheme]);
 
   // The capture script and the size probes drive the mock through this; current() is what they verify.
@@ -92,8 +98,8 @@ export default function MockHarness({ name = "mock", options, states = ["populat
   }, [framed, apply]);
   useEffect(() => {
     if (framed) return;
-    document.querySelectorAll("iframe[data-vp]").forEach((f) => f.contentWindow?.postMessage({ __mock: { option, state, theme, filter, reduce } }, "*"));
-  }, [framed, option, state, theme, filter, reduce, vp]);
+    document.querySelectorAll("iframe[data-vp]").forEach((f) => f.contentWindow?.postMessage({ __mock: { option, state, theme, filter, reduce, today } }, "*"));
+  }, [framed, option, state, theme, filter, reduce, today, vp]);
 
   useEffect(() => {
     if (framed) return;
@@ -113,6 +119,8 @@ export default function MockHarness({ name = "mock", options, states = ["populat
       if (k === "m" || k === "M") return setFilter((f) => (f === FILTERS.mono ? "" : FILTERS.mono));
       if (k === "r" || k === "R") return setReduce((r) => !r);
       if (k === "p" || k === "P") return play(options[live.current.option]?.play);
+      if (k === "n" || k === "N") return toggle("needs");
+      if (k === "t" || k === "T") return setToday((t) => !t);
       if (k === "v") return setVp((v) => { const list = ["full", ...presets.map(([w]) => w)]; return list[(list.indexOf(v) + 1) % list.length]; });
       if (k === "V") return setVp((v) => (v === "all" ? "full" : "all"));
     };
@@ -122,10 +130,12 @@ export default function MockHarness({ name = "mock", options, states = ["populat
 
   const current = options[option];
   const stage = (
-    <div data-stage data-mock-option={option} data-mock-state={state} data-reduce={reduce ? "" : undefined} style={{ position: "relative", minHeight: "100%", filter: filter || undefined, cursor: layer.fb ? "crosshair" : undefined }}>
+    <div data-stage data-mock-option={option} data-mock-state={state} data-reduce={reduce ? "" : undefined} data-today={today ? "" : undefined} style={{ position: "relative", minHeight: "100%", filter: filter || undefined, cursor: layer.fb ? "crosshair" : undefined }}>
       <style>{`[data-reduce] *, [data-reduce] *::before, [data-reduce] *::after { transition: none !important; animation: none !important; }
+[data-today] [data-needs] { display: none !important; }
 @keyframes mock-in { from { opacity: 0 } } [data-mock-swap] { animation: mock-in 200ms ease-out } @media (prefers-reduced-motion: reduce) { [data-mock-swap] { animation: none } }`}</style>
-      <div key={option} data-mock-swap="">{current.render({ state, reduce, theme })}</div>
+      <div key={option} data-mock-swap="">{current.render({ state, reduce, theme, today })}</div>
+      {!framed && layer.needs && !today && <Needs deps={[option, state, vp]} />}
       {!framed && layer.tiers && <Tiers deps={[option, state, vp]} />}
       {!framed && layer.why && <Why deps={[option, state]} />}
       {!framed && <Feedback on={layer.fb} name={name} option={option} state={state} theme={theme} />}
@@ -135,7 +145,7 @@ export default function MockHarness({ name = "mock", options, states = ["populat
   return (
     <>
       {vp === "full" ? stage : <Sizes vp={vp} presets={presets} option={option} state={state} />}
-      <Toolbar {...{ ids, options, option, setOption, states, state, setState, layer, setLayer, filter, setFilter, reduce, setReduce, vp, setVp, presets, theme, setTheme, grades, checks, setChecks }} onPlay={() => play(current.play)} />
+      <Toolbar {...{ ids, options, option, setOption, states, state, setState, layer, setLayer, filter, setFilter, reduce, setReduce, today, setToday, vp, setVp, presets, theme, setTheme, grades, checks, setChecks }} onPlay={() => play(current.play)} />
       {layer.grades && <Grades {...{ ids, options, option, grades, checks }} close={() => setLayer((l) => ({ ...l, grades: false }))} />}
     </>
   );
@@ -174,6 +184,8 @@ function Toolbar(p) {
       <Btn on={p.filter === FILTERS.blur} onClick={() => p.setFilter(p.filter === FILTERS.blur ? "" : FILTERS.blur)} title="Squint test: hierarchy should still read (B)">Blur</Btn>
       <Btn on={p.filter === FILTERS.mono} onClick={() => p.setFilter(p.filter === FILTERS.mono ? "" : FILTERS.mono)} title="Greyscale test: hierarchy without colour (M)">Mono</Btn>
       <Btn on={p.reduce} onClick={() => p.setReduce(!p.reduce)} title="Reduced motion (R)">Still</Btn>
+      <Btn on={p.layer.needs} onClick={() => flip("needs")} title="Backend marks: what needs an API or design-system change (N)">Backend</Btn>
+      <Btn on={p.today} onClick={() => p.setToday(!p.today)} title="Ships today: hide everything that needs backend work (T)">Ships today</Btn>
       {p.options[p.option].play && <Btn onClick={p.onPlay} title="Play the primary flow (P)">▶ Play</Btn>}
       <Btn on={busy} onClick={check} title="Run contrast and size checks">{busy ? "Checking…" : "Checks"}</Btn>
       <Btn on={p.layer.grades} onClick={() => flip("grades")} title="Grades (G)">Grades</Btn>
@@ -208,6 +220,14 @@ function Tiers({ deps }) {
       </div>
     );
   });
+}
+function Needs({ deps }) {
+  const rects = useRects("[data-needs]", deps);
+  return rects.map(({ el, r, s }, i) => (
+    <div key={i} data-mock-chrome style={{ position: "absolute", left: r.left - s.left, top: r.top - s.top, width: r.width, height: r.height, outline: `2px dashed ${NEEDS_COLOUR}`, outlineOffset: 2, pointerEvents: "none", zIndex: 55 }}>
+      <span style={{ ...CHROME, position: "absolute", bottom: "100%", right: -2, marginBottom: 4, padding: "2px 6px", background: NEEDS_COLOUR, borderRadius: 6, whiteSpace: "nowrap", maxWidth: 320, overflow: "hidden", textOverflow: "ellipsis" }}>{el.dataset.needs}</span>
+    </div>
+  ));
 }
 function Why({ deps }) {
   const rects = useRects("[data-why]", deps);
@@ -272,27 +292,18 @@ function Feedback({ on, name, option, state, theme }) {
   );
 }
 
-// ---------- screen sizes (V, Shift+V): real iframes, so media queries see the preset's width ----------
+// ---------- screen sizes (V, Shift+V): real iframes at 1:1, so media queries and the eye see the preset's width ----------
+// The view scrolls rather than shrinking frames; auto margins centre one frame without clipping its left edge.
 function Sizes({ vp, presets, option, state }) {
-  const box = useRef(null);
-  const [room, setRoom] = useState(null);
-  useLayoutEffect(() => {
-    const measure = () => { const b = box.current.getBoundingClientRect(); setRoom({ w: b.width - 32, h: window.innerHeight - b.top - 96 }); };
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
-  }, []);
   const all = vp === "all";
   const list = all ? presets : presets.filter(([w]) => w === vp);
-  const tallest = Math.max(...list.map(([, h]) => h));
-  const scale = !room ? 1 : all ? Math.min(1, room.h / tallest) : Math.min(1, room.w / list[0][0], room.h / list[0][1]);
   return (
-    <div ref={box} style={{ display: "flex", gap: 24, padding: 16, overflowX: all ? "auto" : undefined, justifyContent: all ? "flex-start" : "center", alignItems: "flex-start" }}>
+    <div style={{ display: "flex", gap: 24, padding: "16px 16px 96px", overflow: "auto", alignItems: "flex-start" }}>
       {list.map(([w, h, label]) => (
-        <figure key={all ? w : "one"} style={{ margin: 0, display: "grid", gap: 8, justifyItems: "center", flexShrink: 0 }}>
-          <figcaption style={{ ...CHROME, position: "static", color: "inherit", opacity: 0.7 }}>{label} · {w} × {h}{scale < 1 ? ` · ${Math.round(scale * 100)}%` : ""}</figcaption>
-          <div style={{ position: "relative", overflow: "hidden", borderRadius: 12, width: w * scale, height: h * scale, boxShadow: "0 0 0 1px rgb(127 127 127 / .3), 0 12px 32px -12px rgb(0 0 0 / .25)" }}>
-            <iframe data-vp={w} title={`${label} ${w} px`} src={`${window.location.pathname}?o=${option}&s=${state}&frame=1`} style={{ position: "absolute", top: 0, left: 0, border: 0, width: w, height: h, transform: `scale(${scale})`, transformOrigin: "0 0" }} />
+        <figure key={all ? w : "one"} style={{ margin: all ? 0 : "0 auto", display: "grid", gap: 8, justifyItems: "center", flexShrink: 0 }}>
+          <figcaption style={{ ...CHROME, position: "static", color: "inherit", opacity: 0.7 }}>{label} · {w} × {h}</figcaption>
+          <div style={{ position: "relative", overflow: "hidden", borderRadius: 12, width: w, height: h, boxShadow: "0 0 0 1px rgb(127 127 127 / .3), 0 12px 32px -12px rgb(0 0 0 / .25)" }}>
+            <iframe data-vp={w} title={`${label} ${w} px`} src={`${window.location.pathname}?o=${option}&s=${state}&frame=1`} style={{ position: "absolute", top: 0, left: 0, border: 0, width: w, height: h }} />
           </div>
         </figure>
       ))}
