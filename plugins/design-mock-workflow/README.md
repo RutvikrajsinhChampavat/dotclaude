@@ -8,8 +8,8 @@ graded /100 against a fixed rubric. You pick one, and Claude implements that.
 
 | Skill | Fires when |
 |---|---|
-| `ui-options-first` | Any visual change: colour, layout, component, icon, spacing, animation. Holds the 7-step flow, the rubric, fidelity tiers, runnable checks and fixture rules. |
-| `design-brief-authoring` | The options will come from a tool with no codebase access (Claude Design, a design agent, a contractor). Writes a verified, design-first brief that asks for one playable artboard per direction with every request's failure and every backend cost marked in it, reuses what `ui-options-first` already recorded in `design-mocks/`, and checks it before sending with the bundled `scripts/check-brief.mjs` (Node, no dependencies). The plugin's `PostToolUse` hook runs that check on every write to a `*-brief.md` and hands findings back to Claude. |
+| `ui-options-first` | Any visual change: colour, layout, component, icon, spacing, animation. Holds the 7-step flow, the rubric, the Claude Design canvas build, runnable checks and fixture rules. |
+| `design-brief-authoring` | The options will come from a tool with no codebase access (Claude Design, a design agent, a contractor). Writes a verified, design-first brief that asks for one playable artboard per direction with every request's failure and every backend cost marked in it, reuses what `ui-options-first` already recorded in `design-mocks/`, and checks it before sending with the bundled `scripts/check-brief.mjs` (Node, no dependencies). The plugin's `PostToolUse` hook runs that check on every write to a `<surface>-brief.md` whose `<surface>-brief.facts.md` sits beside it, and hands findings back to Claude. Other `*-brief.md` files (task briefs, docs) are left alone. |
 
 | Agent | Does |
 |---|---|
@@ -25,12 +25,12 @@ graded /100 against a fixed rubric. You pick one, and Claude implements that.
 1. Generate directions (with `ui-ux-pro-max` and `interface-kit` if installed).
    Then art direction: screenshot 6 to 10 benchmark screens into a reference board, measure them (type sizes, row height, colour ratio, depth), and give every direction a numeric art direction with one bold move and the reference it borrows from.
 2. Paper-sketch each direction and grade its structure before building (the look waits for pixels). Every round has at least 3 **Simple** options (conventional, cheap to ship) and 3 **Creative** ones (new layout or interaction, richer visuals). Then map how prominent each section should be from how often it's used, what it's worth, how urgent it is and how deep it goes.
-3. Build each surviving sketch as a cheap **hero frame**: a still on the real route with real components and real data, populated state, desktop. Every agent works from a platform kit (the product's own layout, the classes it actually uses, colour and type by role, its copy), so options look like they already ship in the product. Builders screenshot their own hero to fix its looks, and clear two checks: no clipped text, and no colour, radius, font or class the product doesn't use. You see all the heroes with their grades and pick the finalists. Finalists are then built in depth, one artboard per option: every designed loading, empty and error state (each request's loading and failure included), every screen size drawn at real size, motion on a budget, and a toolbar from the bundled harness kit (state switcher, hierarchy overlay, compare, Play, rationale and feedback pins, size frames, blur and greyscale tests, backend marks with a Ships today switch).
-4. Put runnable checks in the mock: contrast in both themes, icon subset, geometry, paint, visibility, motion budget, craft details (concentric radii, tabular numbers, every control state, no layout shift).
-   Then the craft loop: a bundled script screenshots every option to files, each screenshot goes beside the reference it borrows from, and the top three gaps get fixed, looks first. One round for heroes, three or more for finalists.
-5. Three independent graders score every finalist beside the reference board; the median is the grade. Heroes get one grader per track, started as soon as that track is captured. Accessibility and checks are pass/fail gates, so points come from looks and UX. Finalists must clear 90. The grading panel ships inside the mock.
+3. Build each surviving sketch as a cheap **hero**: one board on a Claude Design canvas, with your design system's real components mounted and real data, populated state, desktop. Nothing is built inside your app repo. Every agent works from a platform kit (the product's own layout, the classes it actually uses, colour and type by role, its copy), so options look like they already ship in the product. You see all the heroes with their grades and pick the finalists. Finalists are then built in depth, still one board per option: every designed loading, empty and error state (each request's loading and failure included), every screen size drawn at real size, motion on a budget, and a chrome bar on the board (state switcher, hierarchy overlay, compare, Replay, rationale and feedback pins, size frames, backend marks with a Ships today switch, a checks panel).
+4. Run the checks. Contrast in both themes is computed from your design system's tokens. A checks panel on each board tests clipped text, sideways scroll, touch targets, geometry, paint, motion budget and craft details (concentric radii, tabular numbers, every control state, no layout shift) when you open it. Claude doesn't render or screenshot the canvas unless you ask, so anything that needs pixels is judged from the board source and labelled "from source".
+   Then the craft loop: each board's source goes beside the reference it borrows from (and any screenshot you share), and the top three gaps get fixed, looks first. One look pass for heroes; finalists get one more fix loop after grading.
+5. Three independent graders score every finalist from its board source, the token contrast table and any screenshot you shared; the median is the grade. Heroes get one grader per track, started as soon as that track's last board lands. Accessibility and checks are pass/fail gates, so points come from looks and UX. Finalists must clear 90. The grading panel ships on the canvas.
 6. Wait for the pick. Feedback comes as pinned notes copied straight out of the mock. The pick and its reason go into a taste log that steers future rounds. A pick like "A's header with C's list" gets a fast remix round of 2 to 3 hybrids.
-7. Extract an implementation spec from the chosen mock, build to it, then screenshot the real build against the mock and fix every difference before deleting the mock.
+7. Extract an implementation spec from the chosen mock and build to it. You compare the real build with the canvas in the states, themes and sizes Claude names, and every difference gets fixed. The canvas stays until you ask to delete it.
 
 **Rubric:** Aesthetic quality 30 · Point of view 10 · UX clarity 20 · Hierarchy fit 15 · Density 10 ·
 Domain fit 10 · Implementation cost 5. Threshold 90. Any dimension under 60% of its weight fails the
@@ -47,6 +47,11 @@ From the public marketplace, in Claude Code:
 
 Without plugins, copy `skills/ui-options-first/` (and `skills/design-brief-authoring/` if you
 want it) into `~/.claude/skills/`.
+
+**Needs:** a Claude account whose Artifact tool lists the Design type, and a design-system
+artifact for your product (the boards mount its components and read its `tokens.json`). Without
+the Design type, Claude says so and asks you how to proceed; it never falls back to building the
+mock in your app.
 
 Once installed, the skills are listed as `design-mock-workflow:ui-options-first` and
 `design-mock-workflow:design-brief-authoring`.
@@ -73,7 +78,7 @@ For ANY visual/UI change, do not edit app code first. Invoke the
 `design-mock-workflow:ui-options-first` skill:
 show genuinely distinct, interactive options built on real components and real data, grade
 each /100 (threshold 90, per-dimension floors), recommend one, and WAIT for my pick. Then
-implement with design tokens and delete the mock.
+implement with design tokens. Mocks live on a Claude Design canvas, never in the app repo.
 ```
 
 ## Files it creates in your repo
@@ -88,21 +93,24 @@ implement with design tokens and delete the mock.
 - `design-mocks/class-census.json`: how often the product uses each styling class and each component variant/colour combo, from the bundled `scripts/class-census.mjs`. Mocks default to what the product uses most, even when that fails a check; the failure goes to you as a platform follow-up.
 - `design-mocks/refs/platform/`: screenshots of the product's own live pages, the base layer every option is compared against. Git-ignored.
 - `design-mocks/refs/<surface>/`: the reference board (screenshots of other products). Git-ignored.
-- `design-mocks/shots/<surface>/`: captured mock screenshots per craft round. Git-ignored.
-- `design-mocks/*.html` mock pages and throwaway routes, deleted after the pick. Git-ignored.
+- `design-mocks/canvas/<surface>-<round>/`: local copies of each round's boards, the files sent to the canvas. Git-ignored.
+
+The mocks themselves live on the Claude Design canvas. No mock route, page or harness file goes
+into your app source.
 
 Suggested `.gitignore` lines (the skill checks the fixtures entry before it writes one):
 
 ```
 design-mocks/fixtures/
 design-mocks/refs/
-design-mocks/shots/
+design-mocks/canvas/
 design-mocks/*.html
 ```
 
-**Screenshots** come from the bundled `scripts/capture.mjs`, which needs Node 22+ and Chrome, Edge
-or Chromium. Captures run in a headless browser, so no window
-opens and nothing takes focus. When the app needs a sign-in, the script asks you to run its
-`signin` command and sign in once per round; it copies that sign-in's local cookies and never
-types credentials. Each run opens and closes its own headless tab, so parallel builders can
-capture at once.
+**Reference screenshots** (the reference board and your live product pages) come from the bundled
+`scripts/capture.mjs refs`, which needs Node 22+ and Chrome, Edge or Chromium. Captures run in a
+headless browser, so no window opens and nothing takes focus. When the app needs a sign-in, the
+script asks you to run its `signin` command and sign in once; it copies that sign-in's local
+cookies and never types credentials. The mock harness (`assets/mock-harness/`), `capture.mjs
+mock|sheet` and `scripts/firefox-capture.mjs` belong to the retired route build and still ship
+for older rounds; new rounds don't use them.

@@ -40,8 +40,8 @@ bar appended at the end is ignored.
 openers, "not X but Y" framing, triplet lists for rhythm, inflated adjectives, em-dash chains.
 If your setup has a de-slop / humanize skill, run it here.
 
-**4. Check it.** A hook runs `scripts/check-brief.mjs` on every write to a `*-brief.md` and
-hands its findings back; without the hook, run `node scripts/check-brief.mjs <brief.md>`. Fix every
+**4. Check it.** A hook runs `scripts/check-brief.mjs` on every write to a `<surface>-brief.md`
+whose facts file sits beside it, and hands its findings back; without the hook, run `node scripts/check-brief.mjs <brief.md>`. Fix every
 finding. For one you read and judged harmless, add `lint-allow: <check-id>` to the facts file and
 name it in the handoff.
 Then do the read the script cannot: for each fact-table row, find every place the brief states that

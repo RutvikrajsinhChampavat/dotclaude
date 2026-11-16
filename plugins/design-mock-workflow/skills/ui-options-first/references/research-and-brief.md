@@ -39,7 +39,8 @@ mock on research, and don't present inferred entries as verified.
   than inferring. A confident guess is worse than a gap in a durable file.
 - Capture the **implementation technique, not just the appearance**: the API, the threshold,
   the measured number, the data structure. "A render guard fires above ~0.3MB", "that toolbar
-  component is screen-fixed by contract", "collapse depth takes an integer, not a boolean".
+  component is screen-fixed by contract", "virtualization covers render but not parse",
+  "collapse depth takes an integer, not a boolean".
   Anyone can copy a look from a screenshot; only the mechanism tells you what it costs to ship
   and where it breaks.
 - Carry a **Differentiators** section: what you could do that NONE of the researched products
@@ -47,7 +48,8 @@ mock on research, and don't present inferred entries as verified.
   says why this team specifically can build it (infrastructure it already runs); and says why it
   matters more in this domain than in theirs. Tag these `[NEW]`. They are proposals, not
   findings, and never get mixed in with sourced entries. Copying the field's conventions buys
-  parity; this section is the only part that buys an edge.
+  parity; this section is the only part that buys an edge. Write it every round, and prefer
+  ideas that fall out of what this platform already has and its competitors lack.
 
 ### The project brief: `design-mocks/GRADER-CONTEXT.md`
 
