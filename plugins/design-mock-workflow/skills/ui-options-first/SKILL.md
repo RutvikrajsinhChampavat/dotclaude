@@ -30,16 +30,20 @@ option that does fails Fidelity, whatever its total.
 | `references/research-and-brief.md` | REFERENCES.md shape, GRADER-CONTEXT.md template and update rules, DECISIONS.md taste log | Step 0, Step 6 |
 | `references/art-direction.md` | Reference board, measured spec, per-option art direction | Step 1b, Step 4b, Step 5 |
 | `references/rubric.md` | Gates, the /100 rubric, hard floors, what each stage scores, median of three graders | Step 2, Step 5 |
-| `references/build.md` | Platform kit (layout, usage census, colour and type by role, traps), fidelity tiers, captured data fixtures, route hygiene, live animations, mock-code exemption | Step 1b, Step 3 |
-| `references/states-and-chrome.md` | Designed states, mock toolbar (incl. feedback pins), motion budget, screen sizes | Step 3 |
-| `references/checks-and-craft.md` | Runnable checks, capture, the comparative craft loop | Steps 4, 4b |
+| `references/build.md` | Platform kit (layout, usage census, colour and type by role, traps), the Claude Design canvas build, captured data fixtures, live animations, builder contract, mock-code exemption | Step 1b, Step 3 |
+| `references/states-and-chrome.md` | Designed states, the board's chrome bar (incl. feedback pins), motion budget, screen sizes | Step 3 |
+| `references/checks-and-craft.md` | Runnable checks, the comparative craft loop | Steps 4, 4b |
 | `references/handoff.md` | Implementation spec and fidelity check | Step 7 |
 
-Bundled: `assets/mock-harness/MockHarness.jsx` (the mock toolbar, frames, overlays and checks
-for a React route; copy it into the mock route), `scripts/capture.mjs` (reference and mock
-screenshots to PNG files, which the graders read; needs Node 22+ and Chrome, Edge or Chromium)
-and `scripts/class-census.mjs` (how often the product uses each styling class and each component
-variant/colour combo, and which mock classes and combos it never or rarely uses).
+**Mocks live on a Claude Design canvas only.** Never a mock route, page, component or harness
+file in the live project. Bundled and still used: `scripts/capture.mjs refs` (reference-board
+screenshots, the live product page included; needs Node 22+ and Chrome, Edge or Chromium) and
+`scripts/class-census.mjs` (`census`: how often the product uses each styling class and each
+component variant/colour combo, for the platform kit; `check`: which classes and combos on a board
+the product never or rarely uses). Retired with the route build, shipped only
+for older rounds: `assets/mock-harness/MockHarness.jsx`, `capture.mjs mock|sheet|signin` and
+`scripts/firefox-capture.mjs`. If this account lists no Design artifact type, say so and ask the
+user how to proceed; never fall back to a route in the app.
 
 A cross-reference by section title ("States are designed", "Mock chrome", "Motion budget",
 "Captured data fixtures", "Mock code is exempt") lives in the file above that holds it.
@@ -237,37 +241,37 @@ offer, not a variant of one.
 
 ## Step 3: Build. Wide and cheap first, then deep
 
-Build at the highest fidelity available, on REAL captured data. **Read `references/build.md` now**: fidelity tiers (real route > real compiled CSS > static HTML on real tokens), captured-fixture rules, throwaway-route hygiene, live animation delivery, and why mock code is exempt from code-quality gates (minimum code never means minimum design). On a React stack, start the route from the harness kit (`assets/mock-harness/MockHarness.jsx`) so the capture script can drive it from the first build. Hand every builder `design-mocks/PLATFORM-KIT.md` and pass its "Allowed extras" to the harness `allow` prop. No new colour, radius, font, type size or styling class the product never uses, and no invented label for a concept the product already names: the kit says what exists.
+Build on a Claude Design canvas, on the product's design system and REAL captured data. **Read `references/build.md` now**: the canvas build (design system mounted, one board per option, the Design type's silent-failure rules), captured-fixture rules, live animation delivery, the builder contract, and why mock code is exempt from code-quality gates (minimum code never means minimum design). Never build any part of a mock in the live project. Hand every builder `design-mocks/PLATFORM-KIT.md`. No new colour, radius, font, type size or styling class the product never uses, and no invented label for a concept the product already names: the kit says what exists.
 
 ### Step 3a: Hero frames, then the user picks finalists
 
-Build every sketch that survived Step 2 as a **hero**: one frame on the real route, real
-components and real captured data, the populated state at Desktop in the product's default
-theme, with the art direction applied in full and its transitions wired: hover and press on every
-control, enter, exit, expand and collapse for anything it reveals, reduced motion honoured. A
-Creative hero also wires its signature moment as one play (the harness `play`, key P). Other
-states, sizes and the toolbar wait for Step 3b.
+Build every sketch that survived Step 2 as a **hero**: one board on the round's canvas, mounted
+design-system components and real captured data, the populated state at Desktop in the product's
+default theme, with the art direction applied in full and its transitions wired: hover and press
+on every control, enter, exit, expand and collapse for anything it reveals, reduced motion
+honoured. A Creative hero also wires its signature moment as a Replay control. Other states,
+sizes and the full chrome bar wait for Step 3b.
 
 **Budget: 20 minutes from "run a round" to heroes on screen**, on a surface whose kit, board and
 fixture exist (measured 2026-11-07, six heroes with the round-4 directions reused: builders 3.7 to
 4.9 min each in parallel, one grader per track 8.7 to 8.9 min; 14.3 min from dispatch to the last
-grade, 19.3 min from the user's message. Writing new directions is not inside that number yet).
+grade, 19.3 min from the user's message, on the retired route build. Canvas rounds are not
+measured yet. Writing new directions is not inside that number either).
 
-- Before dispatch, scaffold the route: the harness, `page.tsx` with every option registered and
-  each Creative `play` imported from its option file, and one stub per option
-  (`references/build.md`, "Builder contract"). Builders then edit only their own file.
+- Before dispatch, scaffold the canvas: create it, install the design system, send
+  `project/canvas.json` with every board listed, and one stub board per option
+  (`references/build.md`, "Builder contract"). Builders then edit and send only their own board.
 - Dispatch one builder per hero the moment the direction file is written, each with the **hero
   builder contract** (`references/build.md`, "Builder contract"). The contract is the whole
-  prompt: its inputs, its four steps, its `<CHECK>` command and its 10-minute cap.
-- Each builder captures and checks its own hero and does its one look pass. Don't re-run its
-  checks: read `manifest.json` in its shots folder, where every unfiltered frame carries `checks`.
-- A capture that exits 2 needs a sign-in: the builder stops, you ask the user, then resume it.
+  prompt: its inputs, its three steps, its `<CHECK>` command and its 10-minute cap.
+- Each builder sends its board and hands back its token pairs and motion lines. You then compute
+  the contrast table from the design-system tokens (`references/build.md`, after the contract).
 - Grade per track: dispatch one grader for a track the moment that track's last hero lands, with
   the lean inputs (Step 5). Scores share one scale inside a track, where the user picks. The
   graders are now the long pole. If a round runs over, give each hero its own grader: up to three
   times the grader tokens (each re-reads the shared inputs) and no shared scale inside the track; the time saved is not measured.
 
-**Stop and show the heroes.** Give the user every hero screenshot with its grade, gates
+**Stop and show the heroes.** Give the user the canvas link and every hero's grade, gates
 pending, labelled "hero, not final". Heroes are shown at whatever they score; a finalist is shown below 90
 only flagged, after its one fix loop or when the round had no time left for it. Recommend the best
 Simple and the best Creative as finalists, and keep a finalist for every family the user named.
@@ -278,44 +282,39 @@ finished option set.
 
 Each finalist gets the full build: every designed state (each request's loading and failure
 included), every screen-size preset at real size, motion set by the prominence map, and the
-toolbar, all in one artboard per option. **Read `references/states-and-chrome.md`** first.
+chrome bar, all on the option's one board. **Read `references/states-and-chrome.md`** first.
 
 **Budget: 20 minutes from the pick to graded finalists on screen** (measured 2026-11-07, n=1:
 16.4 min for one finalist, a 10.5-minute build plus three graders in parallel).
 
-- Before dispatch, register every state in `page.tsx`, so each builder edits only its own option
-  file.
+- Before dispatch, add every state to each finalist board's state select, so each builder edits
+  only its own board.
 - Dispatch one builder per finalist with the **finalist builder contract** (`references/build.md`):
-  the hero's grader fixes, the states, all six size presets, `<MATRIX>` and `<SHEET>`, a mandatory
-  look pass and a 12-minute cap.
+  the hero's grader fixes, the states, all six size presets and a 12-minute cap.
 - The moment a builder lands, dispatch its three graders with the lean finalist inputs (Step 5).
-  Never start graders before the build is done: they read the shots folder, and would grade a
-  capture the builder has since replaced.
+  Never start graders before the build is done: they read the board source, and would grade a
+  file the builder has since replaced.
 
 ## Step 4: Every mock carries runnable checks, not claimed ones
 
-Every finalist carries runnable checks as fixtures in the mock, never numbers asserted in prose: contrast (both themes), clipped text, platform fidelity and class census, icon subset, geometry, paint, runtime smoke, motion budget, craft details. Heroes run the kit's checks in their one state and theme. **Read `references/checks-and-craft.md` now** for each check's mechanics.
+Every finalist carries runnable checks, never numbers asserted in prose: contrast in both themes computed from the design-system tokens the board uses, the motion lines from its source, and a checks panel on the board (clipped text, sideways scroll, touch targets) that runs live when the user opens it. Nobody renders the canvas unless the user asks, so what needs pixels is judged from the source and labelled that way. **Read `references/checks-and-craft.md` now** for each check's mechanics.
 
 Checks measure the platform-matched design; they never redesign it. A failure on an element that
 matches the platform is reported as inherited and left as the platform has it.
 
-## Step 4b: Craft loop. Capture, compare with the reference, fix, repeat
+## Step 4b: Craft loop. Compare with the reference, fix, repeat
 
-Capture with `scripts/capture.mjs mock` (headless, no window opens; on exit 2 the user signs in
-once with its `signin` command). `--checks` runs the harness checks on every frame, so hygiene
-(contrast, clipped text, sideways scroll, platform fidelity, touch targets) is measured on every
-state, theme and size, not eyeballed. `capture.mjs sheet` tiles the frames, so one Read shows
-every state or every size.
-
-Look rounds are for looks: put the populated frame beside the reference its art direction borrows
-from and a live platform page, run the blur and greyscale tests, and fix the top three gaps. An
+The canvas is never rendered or screenshotted unless the user asks, so look rounds work from the
+board source beside the reference image its art direction borrows from and a live platform page,
+plus any screenshot the user shares (ask for one when a look question can't be settled from the
+source). Fix the top three gaps. An
 option that reads as a different product is the first gap. Every fix moves the option toward the
 platform, never away from it.
 
 - Heroes: one look pass inside the build (Step 3a).
 - Finalists: one look pass inside the build, plus **one fix loop** after grading, only if it still
   ends inside the 20-minute round: resume the same builder (SendMessage) with the graders' top
-  fixes, re-capture, re-grade. A finalist still under 90 after it, or with no time left for it, is
+  fixes, re-send, re-grade. A finalist still under 90 after it, or with no time left for it, is
   shown with its grades and its failing gates named first.
 - Quick-mode options: one round.
 
@@ -334,13 +333,15 @@ Pass the **lean inputs**, and only these:
 - `design-mocks/GRADER-CONTEXT.md` and `design-mocks/PLATFORM-KIT.md`;
 - each option's art-direction block, and the prominence map;
 - the ONE reference that option borrowed from, and ONE live page from `design-mocks/refs/platform/`;
-- shots: heroes, the populated frame with its `-blur` and `-grey`; finalists, `states.png`,
-  `sizes.png` and the full-size populated frame with its `-blur` and `-grey`;
-- the shots folder's `manifest.json` (each unfiltered frame's `checks`);
-- each option's code path, its track (Simple or Creative), and whether it is a hero.
+- each option's board source (its local copy under the round's `<root>`), the design system's
+  README and `tokens.json`, and the captured fixture;
+- the contrast table you computed from the tokens, and each builder's motion lines;
+- any screenshot the user shared of the canvas (none: say the grade is from source, and the
+  grader marks every pixel-only judgement "from source");
+- each option's track (Simple or Creative), and whether it is a hero.
 
-Not the whole board and not every platform page: graders given those read 28 to 31 files, and
-image reads are most of a grader's time (measured 2026-11-07).
+Not the whole reference board and not every platform page: graders given those read 28 to 31
+files, and image reads are most of a grader's time (measured 2026-11-07).
 
 If the agent isn't available, use fresh general subagents whose prompts open by casting each as a
 principal product designer and design director for this product, with the same inputs plus
@@ -354,12 +355,12 @@ gaps** lines to `GRADER-CONTEXT.md` before the next round.
 
 A finalist under 90, or failing a gate or a hard floor, gets the one fix loop of Step 4b if it fits
 the round. Without time for it, or still under 90 after it, show it with the grades and say so
-first. Ship the grading panel inside the mock so the user can challenge the judgement while
-looking at the design. The panel includes each option's prominence map (section to tier, with the
-four axis values and which are `estimated`).
+first. Ship the grading panel on the canvas (a sticky note or the index board) so the user can
+challenge the judgement while looking at the design. The panel includes each option's prominence
+map (section to tier, with the four axis values and which are `estimated`).
 
-Report what you verified from screenshots on disk versus what you verified programmatically;
-never describe a frame you did not see.
+Report what was judged from source, what was computed from tokens and what came from a screenshot
+the user shared; never describe a frame you did not see.
 
 ## Step 6: Wait for the pick
 
@@ -397,18 +398,20 @@ test and review gates green. Some build configs ignore type errors (Next.js
 yourself.
 
 Before writing code, **read `references/handoff.md`**: extract the implementation spec from
-the chosen mock, transitions included, build to it, then run the fidelity check (real build
-screenshotted against the mock in the same states and themes, every mock transition confirmed
-wired with its reduced-motion fallback, differences listed and fixed). The pick is the mock the user
-saw; the shipped version must not quietly drift from it. Delete the mock and any throwaway
-route only after the fidelity check passes.
+the chosen mock, transitions included, build to it, then run the fidelity check (the user
+compares the real build with the canvas in the same states and themes while you check the code
+against the spec, every mock transition confirmed wired with its reduced-motion fallback,
+differences listed and fixed). The pick is the mock the user
+saw; the shipped version must not quietly drift from it. The canvas stays after the fidelity
+check; delete it only when the user asks.
 
 ---
 
 ## Alignment fixes: move the element the user named
 
 "Bring X to Y's line" names X as the thing that moves. Don't move Y instead, even when it gives
-identical alignment.
+identical alignment. Move the instruction's grammatical subject, even when another element is
+easier to adjust.
 
 ---
 
@@ -417,7 +420,8 @@ identical alignment.
 When a plan includes ANY visual change, run this flow while building the plan and write the
 chosen variant into it, with the tokens, spacing and component it maps to. A plan with "TBD,
 will show options later" isn't ready to approve. During execution, the implementer builds the
-recorded choice; no second options round.
+recorded choice; no second options round. If a plan surfaces a UI change nobody anticipated,
+pause and run the flow for it before finalizing.
 
 ---
 

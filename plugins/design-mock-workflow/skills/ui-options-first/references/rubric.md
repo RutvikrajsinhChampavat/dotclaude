@@ -1,7 +1,7 @@
 # The rubric
 
 Loaded at Step 2 (sketch grades) and Step 5 (hero and finalist grades) of `ui-options-first`. The
-`ui-grader` agent carries its own copy (`agents/ui-grader.md` in this plugin); change one, change both.
+`ui-grader` agent carries its own copy (`agents/ui-grader.md`); change one, change both.
 
 **Precedence: platform match first, then gates, then points.** Grade the option as the platform
 ships it. A gate failure that comes from the platform itself is flagged, not failed; a departure

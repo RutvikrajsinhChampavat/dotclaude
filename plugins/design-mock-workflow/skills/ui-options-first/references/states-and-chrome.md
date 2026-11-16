@@ -55,17 +55,14 @@ Every error message answers: what happened, whether anything was lost, what to d
 A floating, collapsible toolbar outside the stage (never inside the design being judged). It
 makes the mock answer "what does this feel like in every situation" without the user asking.
 
-**Start from the kit; don't rebuild the chrome.** On a React stack, copy
-`assets/mock-harness/MockHarness.jsx` from this skill into the mock route folder (the app can't
-import from the skill directory) and wrap the page in it. It ships items 1 to 7 below plus blur
-and greyscale filters (`B`, `M`), a reduced-motion switch (`R`), the grades panel (`G`), the
-contrast and size checks, and the `window.__mock` handshake the capture script relies on. The
-mock's own code is then the options and their states, nothing else. Mark sections in the option
-code so the overlays work: `data-tier` + `data-axes` (tiers overlay), `data-why` (rationale
-pins), `data-page` on the page root (width checks). The kit's chrome uses plain elements and
-inline styles on purpose: it sits outside the design and must not borrow its look. Usage is in
-the file header. On another stack, build the same toolbar and the same `window.__mock`
-contract (`meta`, `set`, `current`, `filter`).
+**The chrome is a bar on each option's board** (mocks live on a Claude Design canvas only; the
+retired route harness is not used). It carries items 1 to 7 below plus a reduced-motion switch,
+the grades note and the checks panel. Every key named below is a chrome-bar control (a button or
+a select), because the Design type forbids global keydown handlers; a key works only while a
+chrome control has focus. Mark sections in the board so the overlays work: `data-tier` +
+`data-axes` (tiers overlay), `data-why` (rationale pins), `data-page` on the page root (width
+checks). The chrome uses plain elements and inline styles on purpose: it sits outside the design
+and must not borrow its look.
 
 **Default, every mock, first build:**
 
@@ -102,8 +99,8 @@ contract (`meta`, `set`, `current`, `filter`).
    data the captured fixture does not hold, and `data-needs="System: <what changes>"` on one that
    needs a new token, variant or shared component. `N` tags each with its cost, on when the mock
    opens. `T` (Ships today) hides every marked element, so the user sees what ships with no
-   backend work; an option with a fallback reads `today` from its render props and draws it.
-   Captures hide the tags with the rest of the chrome.
+   backend work; an option with a fallback reads the Ships today state and draws it. A
+   screenshot shared for grading has the tags off (`N`), like the rest of the chrome.
 
 **Optional: add when the surface calls for it:** persona/role switcher (when frequency differs
 by role), a density toggle, a ⌘K command
@@ -178,12 +175,11 @@ also gets frames at that container's real widths, read from the code.
 (MUI `useMediaQuery`, Tailwind `md:`) respond to the *window*, not to a div's width. A 390px
 `div` inside a 1440px window still renders the desktop layout and lies about the phone. So:
 
-- If the app uses viewport media queries or breakpoint hooks, render each frame as an
-  `<iframe>` of the same mock route at the preset's width and height (add `?frame=1` to hide the
-  toolbar inside it), at 1:1; the All sizes view scrolls. The layout inside is then real, and so
-  is its size: a 2560 frame shrunk to fit a laptop hides the wide-screen problems it exists to show.
-- If the surface is built on container queries (`@container`), a sized `div` is enough, and the
-  frames can share one React tree.
+- A board can't hold an `<iframe>`, so each preset is a frame at its real pixel width, with the
+  page's width `@media` rules rewritten as `@container` rules on that frame, at 1:1; the All sizes
+  view scrolls. A 2560 frame shrunk to fit a laptop hides the wide-screen problems it exists to
+  show. List on the board's notes what still follows the window: component-library breakpoints, a
+  fluid root font and `pointer: coarse`.
 - Never fake a size by shrinking with `zoom` or `transform` alone: the layout stays desktop.
 
 **What each option must get right at each size:**
@@ -214,5 +210,10 @@ Build one board with a chrome bar along its top:
 A Claude Design board has no documented way to frame another, so put the page in a frame at the
 preset's real pixel width and turn the page's width `@media` rules into `@container` rules on that
 frame. Toasts and fly-in ghosts become `absolute` inside the frame. List in the notes what still
-follows the window: component-library breakpoints, a fluid root font and `pointer: coarse`. Save
-or publish lands somewhere visible on the board, so the flow plays end to end.
+follows the window: component-library breakpoints, a fluid root font and `pointer: coarse`. Every
+API call gets a loading and an error state the user can reach by playing, and save or publish
+lands somewhere visible on the board, so the flow plays end to end.
+
+Board CSS that overrides a design-system component (padding or colour on a text field or button)
+needs `!important`: the bundle's own rules are more specific and win silently. Note in the spec
+what the real component does instead (a prop or slot, not a CSS override).

@@ -38,10 +38,10 @@ project's own motion library and tokens, its reduced-motion fallback included.
 
 When the implementation runs:
 
-1. Screenshot the real build in the same states, themes and screen sizes as the mock's
-   populated and weakest states. The real page has no `window.__mock`, so capture it with
-   `scripts/capture.mjs refs` (one line per state URL and size) through the same headless capture as
-   Step 4b, which reuses the user's sign-in.
+1. The user looks at the real build beside the canvas: give them the page URL, the canvas link,
+   and the exact states, themes and sizes to compare (the canvas is not screenshotted unless they
+   ask, so the side-by-side is theirs). Meanwhile compare the implementation's code with the spec
+   table row by row.
 2. Compare each pair against the mock and the spec. List every difference: spacing, alignment,
    type, colour, missing state, motion timing, copy.
 3. Re-run the mock's runnable checks (contrast, craft, motion) against the real page where they
@@ -56,5 +56,5 @@ When the implementation runs:
    OK. A deviation the user didn't approve is a bug.
 
 Report the result as a table: state · theme · differences found · fixed / accepted, plus one row
-per Motion entry (wired, reduced-motion fallback, confirmed by the user). Delete the mock route
-and its fixtures only after this passes.
+per Motion entry (wired, reduced-motion fallback, confirmed by the user). The canvas and its
+fixtures stay after this passes; delete them only when the user asks.

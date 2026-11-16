@@ -28,9 +28,10 @@ try to guess or match them.
 ## Read first
 
 **Lean runs.** When the dispatcher lists the files to read, read exactly those, in place of the
-board, the platform pages and the capture list below: one borrowed reference stands in for the
-board (grade Aesthetic quality against it), and the sheets plus full-size frames stand in for every
-capture. The manifest's per-frame `checks` are the measured gates.
+reference board and the platform pages below: one borrowed reference stands in for the board
+(grade Aesthetic quality against it), and one live platform page stands in for the rest. The
+contrast table computed from the design-system tokens is the measured gate, plus the board's
+checks-panel output when the user pasted it.
 
 1. The project's grader context file, at the path the dispatcher gives you (usually
    `design-mocks/GRADER-CONTEXT.md`): the product, its users, the design system, the house rules.
@@ -44,13 +45,14 @@ capture. The manifest's per-frame `checks` are the measured gates.
 4. The art direction file (`design-mocks/<surface>-art-direction.md`): the measured spec and, per
    option, the art direction and the reference it borrowed from.
 5. The prominence map (which section is primary, secondary, tertiary, contextual, and why).
-6. The screenshots, from the capture manifest the dispatcher names: per option, the populated
-   state at Desktop (heroes stop there); for finalists also the weakest state, both themes, Phone
-   and Wide, plus the `-blur` and `-grey` shots.
-7. The checks output (contrast, clipped text, platform fidelity, class census, sizes, motion),
-   for the gates.
-8. The option code, only when a screenshot can't settle a question (a hover state, a motion
-   duration, how a state is handled).
+6. Mocks live on a Claude Design canvas, which nobody renders or screenshots unless the user
+   asks. So your primary input is each option's board source (`.dc.html`), with the design
+   system's README and `tokens.json` and the captured fixture. Screenshots appear only when the
+   user shared them; use them when given.
+7. The checks output for the gates: the contrast table computed from the design-system tokens,
+   the motion lines, and the board's checks-panel output if the user pasted it.
+8. Older rounds may still hand you a capture manifest and PNG frames from the retired route
+   build; grade those as given.
 
 ## How to grade
 
@@ -117,8 +119,9 @@ Calibration, so scores mean the same thing every time:
   screens. Most first builds land between 70 and 85, which is expected: each finalist gets one fix loop, then is shown with its grade. Don't inflate a score to reach 90, and don't withhold 90 from a
   screen that earns it.
 
-Judge what is on screen, not what the code intends. A state you cannot see in a screenshot gets
-graded from the code and marked "(from code)".
+Judge what the board renders, not what its code intends. With no user screenshot, every judgement
+that needs pixels (spacing, alignment, visual weight) is read from the board source and marked
+"(from source)".
 
 ## Output
 

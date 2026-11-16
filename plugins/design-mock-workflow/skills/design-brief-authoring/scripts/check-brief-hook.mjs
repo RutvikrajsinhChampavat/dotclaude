@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// PostToolUse hook: lints any <surface>-brief.md the agent writes; exit 2 hands findings back to it.
+// PostToolUse hook: lints a <surface>-brief.md that has its facts file beside it; exit 2 hands findings back.
 // Checks judged harmless are allowed by `lint-allow: <id>` lines in <surface>-brief.facts.md.
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
@@ -23,16 +23,13 @@ function editedPath(raw) {
   }
 }
 
-function allowedChecks(briefPath) {
-  const facts = briefPath.replace(BRIEF_FILE, FACTS_SUFFIX);
-  if (!existsSync(facts)) return [];
-
-  return [...readFileSync(facts, "utf8").matchAll(ALLOW_LINE)].flatMap((match) => ["--allow", match[1]]);
+function allowedChecks(factsPath) {
+  return [...readFileSync(factsPath, "utf8").matchAll(ALLOW_LINE)].flatMap((match) => ["--allow", match[1]]);
 }
 
-function lintFindings(briefPath) {
+function lintFindings(briefPath, factsPath) {
   try {
-    execFileSync(process.execPath, [LINT, briefPath, ...allowedChecks(briefPath)], { encoding: "utf8" });
+    execFileSync(process.execPath, [LINT, briefPath, ...allowedChecks(factsPath)], { encoding: "utf8" });
     return null;
   } catch (error) {
     if (error.status !== FINDINGS_EXIT) throw error;
@@ -44,7 +41,11 @@ function main() {
   const path = editedPath(readFileSync(0, "utf8"));
   if (!path || !BRIEF_FILE.test(path)) process.exit(0);
 
-  const findings = lintFindings(path);
+  // A design brief is the pair <surface>-brief.md + facts file; task briefs and skill docs share the suffix.
+  const factsPath = path.replace(BRIEF_FILE, FACTS_SUFFIX);
+  if (!existsSync(factsPath)) process.exit(0);
+
+  const findings = lintFindings(path, factsPath);
   if (!findings) process.exit(0);
 
   process.stderr.write(
