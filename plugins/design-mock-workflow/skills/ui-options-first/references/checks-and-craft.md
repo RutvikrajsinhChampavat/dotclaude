@@ -106,8 +106,11 @@ project's own craft values (the house rules in `design-mocks/GRADER-CONTEXT.md` 
   a new one.
 - **One focus ring per control.** A composite input uses `:focus-within` on its wrapper and
   `outline: 0` on the inner field. No native resize handle; auto-grow instead.
-- **Icon on the first line.** An icon beside text that wraps, or beside a title plus a subline,
-  sits on the first line, never centred across the block.
+- **Icon on the first line.** An icon beside text that wraps, or beside a title plus a subline
+  (menu items, list rows, alerts, cards), sits on the title line, never centred across the block.
+  Top-align the row and give the icon a box exactly one title line tall, centring the glyph in it.
+  A tile icon taller than the line is centred on the title line, not on the block. User rule,
+  re-stated 2026-11-17 after a two-line menu item shipped with its icon centred.
 - **Underline the label only.** A link's underline covers its text, never the icon glyph.
 - **Expanding reveals itself.** Opening a panel scrolls it into view (`block: 'nearest'`).
 - **Expanding keeps the text's style.** A clamped preview and its opened text use the same

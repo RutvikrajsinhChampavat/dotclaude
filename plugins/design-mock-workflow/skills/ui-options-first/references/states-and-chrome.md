@@ -92,7 +92,7 @@ and must not borrow its look.
 
 6. **Screen sizes.** A size switcher (`V` cycles presets) plus an **All sizes** view
    (`Shift+V`) that lays every preset side by side at its real size for the current option, state
-   and theme; the view scrolls, and no frame is shrunk to fit. See "Screen sizes" below for the
+   and theme, each scaled to fit the board (1:1 on request). See "Screen sizes" below for the
    presets and how frames must be built.
 
 7. **Backend marks and Ships today.** Put `data-needs="API: <field>"` on every element that shows
@@ -176,11 +176,19 @@ also gets frames at that container's real widths, read from the code.
 `div` inside a 1440px window still renders the desktop layout and lies about the phone. So:
 
 - A board can't hold an `<iframe>`, so each preset is a frame at its real pixel width, with the
-  page's width `@media` rules rewritten as `@container` rules on that frame, at 1:1; the All sizes
-  view scrolls. A 2560 frame shrunk to fit a laptop hides the wide-screen problems it exists to
-  show. List on the board's notes what still follows the window: component-library breakpoints, a
-  fluid root font and `pointer: coarse`.
-- Never fake a size by shrinking with `zoom` or `transform` alone: the layout stays desktop.
+  page's width `@media` rules rewritten as `@container` rules on that frame. A preset wider than
+  the board lays out at its real width, then a `transform: scale()` shrinks it to fit, so the user
+  sees the whole page without scrolling (2026-11-17). The bar says the scale ("shown at 56%") and
+  a 1:1 switch shows real size for detail. List on the board's notes what still follows the window:
+  component-library breakpoints, a fluid root font and `pointer: coarse`.
+- Never fake a size by shrinking with `zoom` or `transform` alone: the layout stays desktop. The
+  scale goes on top of a frame already laid out at the preset's width.
+- Scaling mechanics: measure the stage and the frame's `offsetHeight` with a `ResizeObserver`,
+  scale the frame from `transform-origin: 0 0`, and give it a wrapper sized to the scaled width and
+  height (a transform doesn't change layout size, so without the wrapper the stage still scrolls).
+  `scrollbar-gutter: stable` on the stage stops the scrollbar from flickering the scale. Checks and
+  animations read layout pixels (`offsetWidth`, or a rect divided by the scale): a scaled
+  `getBoundingClientRect()` turns 44px targets into failures and makes a height tween land wrong.
 
 **What each option must get right at each size:**
 - The Step 2b primary is still the first thing seen at every size; tiers can move (a secondary
@@ -201,7 +209,12 @@ sizes too.
 option.** An artboard per state or per width is a repeated miss: separate frames cannot be played.
 Build one board with a chrome bar along its top:
 - a state select listing every scenario, each request's loading and failure included;
-- width presets, each at real size, with the board scrolling when a preset is wider than it;
+- width presets, each laid out at real width and scaled down to fit when wider than the board, with
+  a 1:1 switch;
+- a **Fit** width, first and the default, where the frame is `width:100%` of the board, so an
+  expanded board (`expand: "fill"`) shows the page at the viewer's own window width. Fixed
+  presets alone pin the page at 1440 on a bigger screen while the product fills it (2026-11-17).
+  Size checks that depend on width read the frame's measured width, not the preset value;
 - the theme;
 - a data-variant select, a "fail the next request" switch, and replay;
 - backend marks, on at open, naming the field or system change on each element that needs one,
