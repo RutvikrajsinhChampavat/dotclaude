@@ -18,6 +18,16 @@ instructions (the create result carries them) for every file and call. What this
   components through the bundle global its README names, never look-alikes. Tokens, radii, type
   and fonts come from its `tokens.json` and README. A component the system doesn't ship is built
   from its tokens and named in the option's notes as a gap.
+- **The design system lags the product: check the drift before the scaffold.** It is a snapshot
+  synced from code (`source.exportedAt` in its `project/design-system.json`), and the product's
+  theme keeps moving. Run `git log origin/main --since=<exportedAt> -- src/theme src/app/globals.css`
+  in the product repo and skip the commits the project's platform kit lists as already ported.
+  A remaining commit that changes a component the boards mount gets ported into the system's
+  `components/bundle.js` (or `bundle.css`) first, verified, published, and added to that list;
+  the canvas then installs the new version. One you don't port is named on the board as known
+  drift. (2026-11-17: the busy Button showed its label under the loader on canvas boards, which
+  the user had reported many times; the product fixed it on 2026-11-16, the bundle dated from
+  2026-09-17.)
 - **Why real components and not hand-matched tokens:** tokens colour the paint but don't
   reproduce a component library's chrome. Hand-matching a chip radius, button padding, icon
   ligatures and elevation from token values reads as "looks nothing like the real UI" even when
@@ -312,3 +322,10 @@ reported, compute the ratio from the design system's `tokens.json` in both theme
 script; every number tagged derived). That table is the round's measured contrast gate. Clipped
 text, sideways scroll and touch targets can't be measured without rendering: the board's checks
 panel runs them live for the user, and graders judge them from the source.
+
+## Claude Design canvas gotchas
+
+- Canvas publish conflict ("published content is not what you last saw"): someone edited on the canvas. Read the live file, diff it against your base, merge their change into your copy, then publish. Never force.
+- Keep the board source and check scripts in `design-mocks/`, not the session scratchpad. A new session gets a new scratchpad, and publishing refuses a `root` outside the working directory or the current scratchpad.
+- Floating UI on a board: panels and the frame are `overflow:hidden`. Render tooltips `position:fixed` on `document.body`, and flip popovers by measuring the clipping ancestor.
+- Every markup fix may have two copies (phone/tablet tree and desktop tree). Assert the expected match count on each replacement.
